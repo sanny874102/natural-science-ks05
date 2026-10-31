@@ -3,118 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>康軒版國小五年級自然科線上測驗系統</title>
+    <title>康軒版 國小自然 5上 完整線上題庫</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
         body {
             font-family: 'Noto Sans TC', sans-serif;
-            background-color: #f0fdf4;
+            background-color: #f4fbf7;
         }
-        .custom-radio:checked + label {
+        /* 自訂選項按鈕樣式 */
+        .option-btn {
+            transition: all 0.2s ease;
+        }
+        .option-btn:hover:not(:disabled) {
             border-color: #0d9488;
-            background-color: #ccfbf1;
-            font-weight: 700;
-            color: #0f766e;
+            background-color: #f0fdf4;
+            transform: translateY(-1px);
         }
-        /* 避免印刷或分割問題 */
-        .group-card {
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+        /* 正確選項樣式 */
+        .opt-correct {
+            border-color: #10b981 !important;
+            background-color: #d1fae5 !important;
+            color: #065f46 !important;
+            font-weight: 700;
+        }
+        /* 錯誤選項樣式 */
+        .opt-wrong {
+            border-color: #f43f5e !important;
+            background-color: #ffe4e6 !important;
+            color: #9f1239 !important;
+            font-weight: 700;
+        }
+        /* 題組容器防止切題 */
+        .group-container {
             break-inside: avoid;
+            page-break-inside: avoid;
         }
     </style>
 </head>
-<body class="min-h-screen text-slate-800 flex flex-col">
+<body class="min-h-screen text-slate-800 flex flex-col selection:bg-teal-200">
 
-    <!-- 頂部導覽頁首 -->
-    <header class="bg-gradient-to-r from-teal-600 via-emerald-600 to-cyan-700 text-white shadow-lg sticky top-0 z-50">
-        <div class="max-w-5xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-3">
+    <!-- 頂部頁首導覽 -->
+    <header class="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-700 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 py-3.5 flex flex-col md:flex-row justify-between items-center gap-3">
             <div class="flex items-center gap-3">
-                <div class="bg-white/20 p-2.5 rounded-2xl backdrop-blur-md">
-                    <svg class="w-8 h-8 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+                <div class="bg-white/20 p-2 rounded-xl backdrop-blur-sm shrink-0">
+                    <svg class="w-7 h-7 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-xl sm:text-2xl font-black tracking-wide">康軒版 5上自然線上測驗</h1>
-                    <p class="text-xs text-teal-100">國小自然與生活科技 1~2單元題庫（含題组不切題專題）</p>
+                    <h1 class="text-xl font-black tracking-wide flex items-center gap-2">
+                        康軒版 國小自然 5上 完整線上題庫
+                        <span class="bg-amber-400 text-teal-950 text-xs px-2 py-0.5 rounded-full font-bold">隨堂單＋月考全收錄</span>
+                    </h1>
+                    <p class="text-xs text-teal-100">第1單元動物的世界 · 第2單元聲音與光 · 期中評量考卷</p>
                 </div>
             </div>
-            <!-- 模式選擇鍵 -->
-            <div id="quiz-modes" class="flex flex-wrap gap-2 justify-center">
-                <button onclick="switchQuiz('unit1')" id="btn-unit1" class="mode-btn px-3.5 py-1.5 text-sm rounded-xl font-bold transition-all bg-white text-teal-800 shadow-md">
-                    第1單元 動物的世界
-                </button>
-                <button onclick="switchQuiz('unit2')" id="btn-unit2" class="mode-btn px-3.5 py-1.5 text-sm rounded-xl font-bold transition-all bg-teal-700/60 text-white hover:bg-teal-700">
-                    第2單元 聲音與光
-                </button>
-                <button onclick="switchQuiz('midterm')" id="btn-midterm" class="mode-btn px-3.5 py-1.5 text-sm rounded-xl font-bold transition-all bg-teal-700/60 text-white hover:bg-teal-700">
-                    期中大考驗 (全)
-                </button>
-            </div>
+
+            <!-- 分享按鈕 -->
+            <button onclick="copyShareUrl()" class="text-xs bg-white/15 hover:bg-white/25 border border-white/30 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all active:scale-95">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                <span id="copy-btn-text">複製測驗網址</span>
+            </button>
         </div>
     </header>
 
     <!-- 主要內容區 -->
-    <main class="max-w-5xl mx-auto px-4 py-6 flex-grow w-full">
-        
-        <!-- 單元說明與進度看板 -->
-        <div class="bg-white rounded-2xl shadow-sm border border-emerald-100 p-5 mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div>
-                <span id="quiz-tag" class="bg-emerald-100 text-emerald-800 text-xs font-black px-3 py-1 rounded-full">單元選擇</span>
-                <h2 id="quiz-title" class="text-xl font-bold text-slate-800 mt-2">載入中...</h2>
-                <p id="quiz-desc" class="text-sm text-slate-600 mt-1">請選擇題型並認真作答。</p>
-            </div>
-            <div class="flex items-center gap-4 bg-slate-50 px-4 py-2.5 rounded-xl border border-slate-200">
-                <div class="text-right">
-                    <div class="text-xs text-slate-500 font-medium">答題進度</div>
-                    <div class="text-lg font-black text-teal-600"><span id="answered-count">0</span> / <span id="total-count">0</span> 題</div>
+    <main class="max-w-5xl mx-auto px-4 py-6 flex-grow w-full space-y-6">
+
+        <!-- 測驗設定與進度控制控制台 -->
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-emerald-100 space-y-4">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-100 pb-4">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">🌱</span>
+                    <div>
+                        <h2 class="text-base font-bold text-slate-800">選擇測驗模式與題數：</h2>
+                        <p class="text-xs text-slate-500">系統將自動抽題，點擊答案後將「即時顯示對錯與解析」。</p>
+                    </div>
                 </div>
-                <div class="w-12 h-12 rounded-full border-4 border-teal-500 border-t-transparent animate-spin hidden" id="loading-spinner"></div>
+
+                <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                    <!-- 下拉選單 -->
+                    <select id="mode-select" class="bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-xl font-bold p-2.5 pr-8 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none w-full md:w-auto">
+                        <option value="10">挑戰 10 題 (快速隨機練習)</option>
+                        <option value="25" selected>挑戰 25 題 (精選中量測驗)</option>
+                        <option value="50">挑戰 50 題 (考前實力衝刺)</option>
+                        <option value="all">挑戰全部完整題庫 (全套隨堂單與考卷)</option>
+                    </select>
+
+                    <button onclick="startNewQuiz()" class="px-5 py-2.5 bg-gradient-to-r from-teal-600 to-emerald-600 text-white font-bold text-sm rounded-xl shadow-md hover:from-teal-700 hover:to-emerald-700 active:scale-95 transition-all flex items-center justify-center gap-1.5 w-full md:w-auto">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        ▶ 開始新測驗
+                    </button>
+                </div>
+            </div>
+
+            <!-- 即時統計與進度條儀表板 -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                    <div class="text-xs text-slate-500 font-medium">題目總數</div>
+                    <div class="text-lg font-black text-slate-700" id="stat-total">0 題</div>
+                </div>
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                    <div class="text-xs text-slate-500 font-medium">已作答</div>
+                    <div class="text-lg font-black text-teal-600" id="stat-answered">0 題</div>
+                </div>
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                    <div class="text-xs text-slate-500 font-medium">答對題數</div>
+                    <div class="text-lg font-black text-emerald-600" id="stat-correct">0 題</div>
+                </div>
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                    <div class="text-xs text-slate-500 font-medium">目前即時得分</div>
+                    <div class="text-lg font-black text-amber-600" id="stat-score">0 分</div>
+                </div>
+            </div>
+
+            <!-- 進度條 -->
+            <div class="space-y-1">
+                <div class="flex justify-between text-xs text-slate-500 font-bold">
+                    <span>答題進度</span>
+                    <span id="progress-percent">0%</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden border border-slate-200">
+                    <div id="progress-bar" class="bg-gradient-to-r from-teal-500 to-emerald-500 h-2.5 rounded-full transition-all duration-300 w-0"></div>
+                </div>
             </div>
         </div>
 
-        <!-- 試題容器 -->
-        <form id="quiz-form" onsubmit="event.preventDefault(); submitQuiz();" class="space-y-8">
-            <div id="questions-container" class="space-y-8">
-                <!-- 試題卡片會由 JavaScript 動態生成 -->
-            </div>
+        <!-- 試題卡片列表區域 -->
+        <div id="quiz-container" class="space-y-6">
+            <!-- 題目與題組卡片將由 JavaScript 動態生成 -->
+        </div>
 
-            <!-- 交卷與重測按鈕區 -->
-            <div class="sticky bottom-4 bg-white/95 backdrop-blur border border-slate-200 rounded-2xl p-4 shadow-xl flex justify-between items-center gap-4 z-40">
-                <button type="button" onclick="resetAnswers()" class="px-5 py-2.5 rounded-xl border-2 border-slate-300 text-slate-600 font-bold hover:bg-slate-100 transition-colors">
-                    重新填寫
-                </button>
-                <button type="submit" id="submit-btn" class="flex-grow sm:flex-grow-0 px-8 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-black text-lg shadow-lg hover:from-emerald-600 hover:to-teal-700 transition-all transform hover:-translate-y-0.5">
-                    提交試卷並評分
-                </button>
-            </div>
-        </form>
-
-        <!-- 測驗結果報告 Modal / 卡片 -->
-        <div id="result-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border-4 border-teal-500 text-center relative animate-bounce-in">
-                <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-emerald-300">
-                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
+        <!-- 測驗完成結果 Modal / 評語 -->
+        <div id="finish-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border-4 border-teal-500 text-center space-y-5">
+                <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto border-4 border-emerald-300 text-3xl">
+                    🏆
                 </div>
-                <h3 class="text-2xl font-black text-slate-800 mb-1">測驗完成！</h3>
-                <p class="text-sm text-slate-500 mb-4" id="result-quiz-name">康軒版 5上自然科測驗</p>
-                
-                <!-- 得分展示 -->
-                <div class="bg-gradient-to-br from-teal-50 to-emerald-50 p-6 rounded-2xl border border-teal-200 mb-6">
-                    <div class="text-xs font-bold text-teal-700 uppercase tracking-widest mb-1">YOUR SCORE</div>
-                    <div class="text-5xl font-black text-teal-600"><span id="final-score">0</span> <span class="text-lg font-normal text-slate-500">分</span></div>
-                    <div id="score-badge" class="inline-block mt-3 px-4 py-1.5 rounded-full text-sm font-bold bg-teal-600 text-white shadow-sm">
-                        特優
+                <div>
+                    <h3 class="text-2xl font-black text-slate-800">測驗完成！</h3>
+                    <p class="text-xs text-slate-500 mt-1">康軒版 5上自然線上測驗</p>
+                </div>
+
+                <div class="bg-teal-50 p-5 rounded-2xl border border-teal-200 space-y-1">
+                    <div class="text-xs text-teal-700 font-bold uppercase">最終測驗成績</div>
+                    <div class="text-5xl font-black text-teal-600"><span id="modal-score">0</span> <span class="text-base font-normal text-slate-500">分</span></div>
+                    <div id="modal-badge" class="inline-block px-3.5 py-1 rounded-full text-xs font-bold bg-teal-600 text-white mt-2">
+                        評語計算中
                     </div>
-                    <p id="score-feedback" class="text-sm text-slate-600 mt-2">觀念非常清晰，繼續保持！</p>
                 </div>
 
-                <div class="flex gap-3 justify-center">
-                    <button onclick="closeModalAndReview()" class="px-6 py-3 rounded-xl bg-teal-600 text-white font-bold hover:bg-teal-700 transition-all shadow-md w-full">
-                        查看試題詳細解析
+                <p class="text-sm text-slate-600 leading-relaxed" id="modal-desc">
+                    您已完成所有試題作答！可以留在頁面上詳細瀏覽每一題的觀念解析。
+                </p>
+
+                <div class="flex gap-3">
+                    <button onclick="document.getElementById('finish-modal').classList.add('hidden')" class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-bold text-sm w-full hover:bg-slate-100">
+                        查看解析
+                    </button>
+                    <button onclick="document.getElementById('finish-modal').classList.add('hidden'); startNewQuiz();" class="px-4 py-2.5 rounded-xl bg-teal-600 text-white font-bold text-sm w-full hover:bg-teal-700 shadow-md">
+                        再測一次
                     </button>
                 </div>
             </div>
@@ -123,463 +177,632 @@
     </main>
 
     <!-- 頁尾 -->
-    <footer class="bg-slate-800 text-slate-400 text-xs text-center py-6 border-t border-slate-700 mt-12">
-        <p>康軒版國小五年級自然科學上學期 (1~2單元完整題庫與題組解析)</p>
-        <p class="mt-1 text-slate-500">線上互動測驗系統版權所有 © 2026</p>
+    <footer class="bg-slate-800 text-slate-400 text-xs text-center py-6 mt-12 border-t border-slate-700">
+        <p class="font-medium">康軒版 國小五年級自然科學 上學期線上練習題庫系統</p>
+        <p class="mt-1 text-slate-500">收錄隨堂練習單第1~7回、第一次月考卷A/B卷、期中考A卷全系列題型與題組</p>
     </footer>
 
-    <!-- JS 邏輯處理與題庫資料 -->
     <script>
-        // 完整的康軒5上 1~2單元題庫資料結構
-        const quizBank = {
-            unit1: {
-                title: "第一單元：動物的世界",
-                tag: "單元測驗",
-                desc: "測試內容：動物覓食與器官適應、環境適應與保護行為、社會行為與溝通方式、繁殖與遺傳特徵。",
-                questions: [
-                    {
-                        id: "u1_s1",
-                        type: "single",
-                        tag: "動物適應",
-                        question: "馬主要以植物為食，牠們通常會先利用哪一種牙齒切斷食物，再利用發達的臼齒磨碎植物？",
-                        options: ["門齒", "犬齒", "毒牙", "鳴囊"],
-                        answer: 0,
-                        explanation: "馬是草食性動物，會利用鋒利的門齒切斷植物草料，再用平整發達的臼齒將植物纖維磨碎。"
-                    },
-                    {
-                        id: "u1_s2",
-                        type: "single",
-                        tag: "禦敵行為",
-                        question: "刺蝟在生命受到天敵威脅時，會採取下列哪一種防禦保護機制？",
-                        options: ["噴出具臭味的液體", "自斷尾巴吸引敵害", "捲曲成球狀使尖刺朝外", "躲進水中進行休眠"],
-                        answer: 2,
-                        explanation: "刺蝟受威脅時會將身體捲曲成球狀，使身上的尖銳硬刺朝外，防止掠食者靠近攻擊。"
-                    },
-                    {
-                        id: "u1_s3",
-                        type: "single",
-                        tag: "溝通方式",
-                        question: "蜜蜂在發現豐沛的蜜源後，會透過下列哪一種方式告知巢內的同伴蜜源的方向與距離？",
-                        options: ["發出刺耳的鳴叫聲", "跳擺尾舞或圓圈舞", "散發特殊的毒液氣味", "閃爍腹部尾端的發光器"],
-                        answer: 1,
-                        explanation: "蜜蜂是社會性昆蟲，採蜜蜂會透過跳舞（擺尾舞或圓圈舞）來傳達蜜源的方向和距離訊息。"
-                    },
-                    {
-                        id: "u1_s4",
-                        type: "single",
-                        tag: "動物繁殖",
-                        question: "下列關於胎生動物繁殖特徵的敘述，哪一項是正確的？",
-                        options: [
-                            "胚胎發育所需的養分主要來自於卵黃",
-                            "胚胎在母體外獨立發育成個體後才孵化",
-                            "胚胎在母體子宮內發育成完整個體後才產下",
-                            "所有胎生動物一出生就能獨自覓食生存"
-                        ],
-                        answer: 2,
-                        explanation: "胎生動物（如人類、狗、貓）受精卵在母體內發育，養分由母體直接提供，發育為完整個體後才產出。"
-                    },
-                    // 題組一：家燕短文
-                    {
-                        id: "group_swallow",
-                        type: "group",
-                        tag: "題組一【閱讀理解：家燕生態與育雛】",
-                        stimulus: {
-                            title: "短文閱讀：家燕生態與育雛行為",
-                            content: `每年春天，家燕會從印尼、菲律賓等地飛來臺灣繁衍下一代，屬於夏季的候鳥。在舊式騎樓建築較多的區域，很容易就能看到燕巢。<br><br>
-                            家燕通常停棲在電線上休息，在黃昏剛覓食完降落後排泄。研究發現當騎樓空間的燈光越強時，幼鳥夜間乞食與親鳥餵食的頻率都會增加，繁殖成功率也較高，這主要出現在四～六月繁殖季前期。親鳥在育雛時還會將幼鳥的「糞囊」啣到巢外丟棄，以保持巢內的衛生與清潔。`,
-                            image: null
-                        },
-                        subQuestions: [
-                            {
-                                id: "g1_1",
-                                question: "(1) 家燕在臺灣季節遷徙的分類中，屬於下列哪一種型態的鳥類？",
-                                options: ["留鳥", "過境鳥", "夏候鳥", "冬候鳥"],
-                                answer: 2,
-                                explanation: "家燕在每年春季飛來臺灣繁殖，夏季結束後離開，因此屬於「夏候鳥」。"
-                            },
-                            {
-                                id: "g1_2",
-                                question: "(2) 根據文中敘述，在下列哪一種環境中最容易發現家燕築巢育雛？",
-                                options: ["舊式建築的騎樓屋檐下", "高樓大廈密閉的玻璃窗邊", "海邊密集的防風灌木叢", "高山原始森林深處"],
-                                answer: 0,
-                                explanation: "舊式騎樓結構能防風避雨，是家燕偏好築巢育雛的理想環境。"
-                            },
-                            {
-                                id: "g1_3",
-                                question: "(3) 根據研究說明，下列哪一個月份最容易觀察到親鳥頻繁餵食幼鳥的繁忙景象？",
-                                options: ["一月", "五月", "九月", "十二月"],
-                                answer: 1,
-                                explanation: "文章指出四～六月是家燕繁殖季前期，此時幼鳥乞食與親鳥餵食頻率最高，五月正好在此區間。"
-                            }
-                        ]
-                    },
-                    // 題組三：遺傳特徵表
-                    {
-                        id: "group_genetics",
-                        type: "group",
-                        tag: "題組三【資料對照：人體遺傳特徵組合】",
-                        stimulus: {
-                            title: "資料表格：小芳一家人的特徵對照表與組合圓盤代號",
-                            content: `
-                            <div class="overflow-x-auto my-2">
-                                <table class="min-w-full text-xs text-center border-collapse border border-slate-300 bg-white">
-                                    <thead class="bg-teal-100 text-teal-900 font-bold">
-                                        <tr>
-                                            <th class="border border-slate-300 p-2">成員</th>
-                                            <th class="border border-slate-300 p-2">眼皮特徵</th>
-                                            <th class="border border-slate-300 p-2">拇指特徵</th>
-                                            <th class="border border-slate-300 p-2">美人尖特徵</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td class="border border-slate-300 p-1.5 font-bold">爸爸</td>
-                                            <td class="border border-slate-300 p-1.5">雙眼皮</td>
-                                            <td class="border border-slate-300 p-1.5">拇指彎曲</td>
-                                            <td class="border border-slate-300 p-1.5">無美人尖</td>
-                                        </tr>
-                                        <tr class="bg-slate-50">
-                                            <td class="border border-slate-300 p-1.5 font-bold">媽媽</td>
-                                            <td class="border border-slate-300 p-1.5">雙眼皮</td>
-                                            <td class="border border-slate-300 p-1.5">拇指挺直</td>
-                                            <td class="border border-slate-300 p-1.5">有美人尖</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="border border-slate-300 p-1.5 font-bold">哥哥</td>
-                                            <td class="border border-slate-300 p-1.5">雙眼皮</td>
-                                            <td class="border border-slate-300 p-1.5">拇指挺直</td>
-                                            <td class="border border-slate-300 p-1.5">無美人尖</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="text-xs bg-emerald-50 p-3 rounded-lg border border-emerald-200 text-emerald-900">
-                                <strong>人體特徵組合代號參考：</strong><br>
-                                1號：雙眼皮 + 有美人尖 + 拇指彎曲 | 2號：雙眼皮 + 有美人尖 + 拇指挺直<br>
-                                3號：雙眼皮 + 無美人尖 + 拇指彎曲 | 4號：雙眼皮 + 無美人尖 + 拇指挺直
-                            </div>
-                            `
-                        },
-                        subQuestions: [
-                            {
-                                id: "g3_1",
-                                question: "(1) 對照上表特徵與組合代號，媽媽的遺傳特徵組合屬於幾號？",
-                                options: ["1 號", "2 號", "3 號", "4 號"],
-                                answer: 1,
-                                explanation: "媽媽為「雙眼皮 + 有美人尖 + 拇指挺直」，符合 2 號組合定義。"
-                            },
-                            {
-                                id: "g3_2",
-                                question: "(2) 比較哥哥與爸爸的特徵，下列哪一項是哥哥與爸爸「不相同」的特徵？",
-                                options: ["眼皮（單/雙）", "拇指（挺直/彎曲）", "美人尖（有/無）", "耳垂形狀"],
-                                answer: 1,
-                                explanation: "爸爸的拇指為「彎曲」，哥哥的拇指為「挺直」，兩人在拇指特徵上表現不同。"
-                            },
-                            {
-                                id: "g3_3",
-                                question: "(3) 爸爸、媽媽與哥哥三人在下列哪一項遺傳特徵上完全「相同」？",
-                                options: ["眼皮皆為雙眼皮", "拇指皆為彎曲", "皆有美人尖", "皆無美人尖"],
-                                answer: 0,
-                                explanation: "表格顯示三人的眼皮特徵全部都是「雙眼皮」。"
-                            }
-                        ]
-                    }
-                ]
+        // ------------------------------------------------------
+        // 完整康軒 5上 自然科題庫資料庫 (涵蓋單題與四大題組題)
+        // ------------------------------------------------------
+        const rawSingleQuestions = [
+            // 第一單元：動物的世界
+            {
+                id: "u1_1",
+                unit: "第1單元 動物的世界",
+                question: "馬主要以植物為食，牠們會先利用什麼牙齒切斷食物，再利用什麼牙齒來磨碎植物？",
+                options: ["門齒切斷，臼齒磨碎", "犬齒撕裂，門齒磨碎", "臼齒切斷，犬齒磨碎", "門齒切斷，犬齒磨碎"],
+                answer: 0,
+                explanation: "馬為草食性動物，門齒發達適合切斷草料，後方的臼齒寬大平整適合將植物纖維磨碎。"
             },
-            unit2: {
-                title: "第二單元：聲音與光",
-                tag: "單元測驗",
-                desc: "測試內容：聲音三要素（音量、音調、音色）、樂器振動與空氣柱、噪音防制法與分貝、光的折射與凸透鏡應用。",
-                questions: [
-                    {
-                        id: "u2_s1",
-                        type: "single",
-                        tag: "樂器發聲",
-                        question: "敲擊鐵琴或木琴時，用相同的力量敲擊下列哪一個琴鍵，發出的聲音「音調最高」？",
-                        options: ["最長、最寬的琴鍵", "最矮、最短的琴鍵", "厚度最厚的琴鍵", "所有琴鍵音調都一樣"],
-                        answer: 1,
-                        explanation: "琴鍵越短越小，敲擊時振動頻率越快，發出的聲音音調（音高）就越高。"
-                    },
-                    {
-                        id: "u2_s2",
-                        type: "single",
-                        tag: "直笛空氣柱",
-                        question: "吹奏直笛時，如果手指按壓的笛孔數量「越少」，笛管內形成的空氣柱越短，發出的聲音會？",
-                        options: ["音調越高", "音調越低", "音量越大", "音量越小"],
-                        answer: 0,
-                        explanation: "按壓笛孔越少，空氣柱長度越短，振動越快，發出的聲音音調就越高。"
-                    },
-                    {
-                        id: "u2_s3",
-                        type: "single",
-                        tag: "光的折射",
-                        question: "把一枝完整的透明吸管斜斜插入裝水的玻璃杯中，從側邊觀察會發現水中的吸管看起來好像斷掉了，這是因為？",
-                        options: ["光的直線傳播現象", "光的反射現象", "光從空氣斜射入水中產生的折射現象", "光產生色散效果"],
-                        answer: 2,
-                        explanation: "光從空氣斜斜射入水中時，傳播方向會發生偏折，稱為光的折射現象。"
-                    },
-                    {
-                        id: "u2_s4",
-                        type: "single",
-                        tag: "凸透鏡應用",
-                        question: "利用噴霧器在陽光下製造彩虹色光時，操作者應該面向什麼方向進行操作才能清楚看見彩虹？",
-                        options: ["面對太陽向陽光處噴水", "背對陽光向陰暗處噴水霧", "正面直視太陽上方噴水", "無所謂，任何角度都一樣"],
-                        answer: 1,
-                        explanation: "人必須背對陽光，水霧將太陽光進行折射與反射後，彩虹色光才會折射入眼睛。"
-                    },
-                    // 題組二：分貝圖表
-                    {
-                        id: "group_decibels",
-                        type: "group",
-                        tag: "題組二【圖表分析：生活聲音分貝與聽力保護】",
-                        stimulus: {
-                            title: "圖表資料：生活常見聲音分貝數與對人體健康影響表",
-                            content: `
-                            <div class="bg-amber-50 p-3 rounded-xl border border-amber-200 text-xs text-slate-700 leading-relaxed space-y-2 mb-2">
-                                <p><strong>【音量與影響對照數據】</strong></p>
-                                <ul class="list-disc pl-4 space-y-1">
-                                    <li><strong>20 ~ 40 分貝：</strong>樹林風吹聲（非常安靜，不影響睡眠）</li>
-                                    <li><strong>30 ~ 60 分貝：</strong>冷氣機運轉聲（40分貝以上會開始干擾睡眠）</li>
-                                    <li><strong>40 ~ 65 分貝：</strong>一般對話交流聲（高於65分貝會干擾課堂學習與注意力）</li>
-                                    <li><strong>70 ~ 90 分貝：</strong>擴音器叫賣聲、傳統民俗活動（長久暴露使工作效率降低）</li>
-                                    <li><strong>80 ~ 110 分貝：</strong>建築工地機具運轉聲（90分貝以上長時間暴露恐造成聽力損失）</li>
-                                    <li><strong>110 ~ 140 分貝：</strong>噴射飛機起飛引擎聲（120分貝以上易導致永久性聽力受損）</li>
-                                </ul>
-                            </div>
-                            `
-                        },
-                        subQuestions: [
-                            {
-                                id: "g2_1",
-                                question: "(1) 小萱夜間睡覺時聽到房間冷氣機運轉聲，此聲音音量最可能是多少分貝？",
-                                options: ["20 分貝", "40 分貝", "90 分貝", "140 分貝"],
-                                answer: 1,
-                                explanation: "冷氣運轉聲約落在 30~60 分貝區間，40分貝為合理範圍。"
-                            },
-                            {
-                                id: "g2_2",
-                                question: "(2) 在約 70 分貝的環境音量下進行下列哪一項活動，比較不受該音量干擾影響？",
-                                options: ["夜間睡眠", "課堂專心學習", "專心思考與閱讀", "體力勞動與一般工作"],
-                                answer: 3,
-                                explanation: "70分貝已嚴重影響睡眠與學習，但對於體力勞動或一般工作影響相對較小。"
-                            },
-                            {
-                                id: "g2_3",
-                                question: "(3) 在機場跑道協助飛機起降的地勤人員，工作時必須配戴「防音耳罩」，其主要目的是？",
-                                options: ["避免與同事聊天", "防範巨大噪音造成永久性聽力受損", "聽音樂舒緩壓力", "增加工作服裝整體造型美感"],
-                                answer: 1,
-                                explanation: "飛機起飛引擎聲高達 110-140 分貝，戴耳朵保護罩能隔絕極高分貝噪音，防止聽力永久受損。"
-                            }
-                        ]
-                    },
-                    // 題組四：自製吸管笛
-                    {
-                        id: "group_flute",
-                        type: "group",
-                        tag: "題組四【科學實驗：自製吸管笛與聲音變化】",
-                        stimulus: {
-                            title: "實驗設定：自製吸管笛樂器結構與操作說明",
-                            content: `
-                            <div class="bg-sky-50 p-3 rounded-xl border border-sky-200 text-xs text-slate-800 leading-relaxed">
-                                <strong>【實驗操作步驟】</strong><br>
-                                小華利用剪刀、塑膠吸管、竹籤與濕棉花製作了一管「自製吸管笛」。<br>
-                                1. 將濕棉花裹在竹籤一端，塞入吸管內部作為可滑動的活塞。<br>
-                                2. 演奏時，將嘴唇對準吸管頂端的笛口吹氣使管內空氣柱振動發聲。<br>
-                                3. 吹氣時可以同時用手上下拉動竹籤，藉此改變吸管內部空氣柱的長度。
-                            </div>
-                            `
-                        },
-                        subQuestions: [
-                            {
-                                id: "g4_1",
-                                question: "(1) 當手將吸管內部的竹籤「由上往下拉動」時，吸管內空氣柱變長，吹出的聲音音調會？",
-                                options: ["聲音音調變高", "聲音音調變低", "聲音音量變大", "沒有任何改變"],
-                                answer: 1,
-                                explanation: "竹籤往下拉會使內部空氣柱空間變長，振動頻率變慢，因此發出的聲音音調會變低。"
-                            },
-                            {
-                                id: "g4_2",
-                                question: "(2) 若小華想要改變這個自製吹奏樂器所發出的「音色」，下列哪一種做法最適當？",
-                                options: [
-                                    "吹氣時使用更大的吹氣力量",
-                                    "將竹籤拉得更長",
-                                    "將笛管材質從塑膠吸管更換成竹管或金屬管",
-                                    "把吸管頂端剪短"
-                                ],
-                                answer: 2,
-                                explanation: "音色取決於樂器的材質與結構。更換樂器管身材質（如改用竹管或金屬管）可以明顯改變聲音的音色。"
-                            }
-                        ]
-                    }
-                ]
+            {
+                id: "u1_2",
+                unit: "第1單元 動物的世界",
+                question: "下列關於昆蟲避敵行為的敘述，哪一項是「不正確」的？",
+                options: ["竹節蟲利用身體偽裝成樹枝", "胡蜂具有鮮豔警戒色與毒針", "所有昆蟲都只靠保護色隱藏自己", "枯葉蝶外形像枯葉以欺騙掠食者"],
+                answer: 2,
+                explanation: "昆蟲防衛方式多樣，除了保護色外，還有偽裝、警戒色、毒針、擬態等多種生存方式。"
             },
-            midterm: {
-                title: "期中綜合大考驗 (全單元)",
-                tag: "綜合大考",
-                desc: "整合第1與第2單元所有精選單題與四大題組題，進行全面的觀念測驗。",
-                questions: [] // 動態結合 unit1 與 unit2
+            {
+                id: "u1_3",
+                unit: "第1單元 動物的世界",
+                question: "黑面琵鷺具有扁平如湯匙狀的長嘴，這對牠們在濕地生活有什麼主要幫助？",
+                options: ["幫助撕裂陸地上大型動物的肉", "在淺水中左右掃動捕捉魚蝦", "啄開堅硬的樹木果實殼", "吸引異性注意進行求偶"],
+                answer: 1,
+                explanation: "黑面琵鷺扁平湯匙狀的嘴喙可在水中左右掃動，感應並夾捕水中的魚蝦與貝類。"
+            },
+            {
+                id: "u1_4",
+                unit: "第1單元 動物的世界",
+                question: "當動物生命受到威脅時，下列哪一種動物的自我保護防禦方式描述「錯誤」？",
+                options: ["臭鼬會噴出具臭味的液體", "龜會將頭和四肢縮進硬殼中", "壁虎會噴出劇毒液體毒死敵人", "刺蝟會捲曲成球狀使尖刺朝外"],
+                answer: 2,
+                explanation: "壁虎遇到危險時會採取「自斷尾巴」來吸引敵害注意力趁機逃跑，並不會噴出毒液。"
+            },
+            {
+                id: "u1_5",
+                unit: "第1單元 動物的世界",
+                question: "下列哪一項「不是」動物在寒冷低溫時維護體溫或禦寒的方法？",
+                options: ["北極熊具有厚厚的皮下脂肪與濃密毛皮", "幾隻小鴨聚在一起互相取暖", "龜在岸邊曬太陽吸收熱量", "狗在樹蔭下大聲喘氣吐出舌頭"],
+                answer: 3,
+                explanation: "狗喘氣吐舌頭是為了在天氣炎熱時「散熱降溫」，並非低溫時維持體溫的方法。"
+            },
+            {
+                id: "u1_6",
+                unit: "第1單元 動物的世界",
+                question: "紫斑蝶每年春、夏季時會從臺灣南部大規模往北部遷移，主要目的是為了？",
+                options: ["尋找水源", "繁殖下一代", "躲避冬季寒流", "尋找新礦物質"],
+                answer: 1,
+                explanation: "臺灣紫斑蝶春夏季北遷主要是尋找適宜的寄主植物產卵，進行繁殖下一代。"
+            },
+            {
+                id: "u1_7",
+                unit: "第1單元 動物的世界",
+                question: "獅子和獵豹都具有發達且尖銳的犬齒，這項構造主要有什麼功能？",
+                options: ["吸引異性注意", "幫助撕裂獵物肉塊", "協助身體快速散熱", "磨碎硬殼種子"],
+                answer: 1,
+                explanation: "肉食性動物（如獅、豹、虎）發達尖銳的犬齒用來咬死獵物並撕裂肉塊。"
+            },
+            {
+                id: "u1_8",
+                unit: "第1單元 動物的世界",
+                question: "關於螞蟻巢穴內的社會分工結構，負責保護蟻巢、抵禦外敵的螞蟻是？",
+                options: ["工蟻", "兵蟻", "雄蟻", "蟻后"],
+                answer: 1,
+                explanation: "蟻群中兵蟻大顎發達，專責抵禦外敵保衛蟻巢；工蟻負責築巢與尋找食物；蟻后負責產卵。"
+            },
+            {
+                id: "u1_9",
+                unit: "第1單元 動物的世界",
+                question: "下列哪一種行為「不屬於」動物的社會行為？",
+                options: ["家貓獨自舔自己的毛清理身體", "象群中的母象共同照顧幼象", "雌獅捕獵食物、雄獅保衛領地", "臺灣獼猴互相理毛與分工合作"],
+                answer: 0,
+                explanation: "貓舔自己的毛屬於個體清潔行為，不涉及同種個體間的互動與分工社會行為。"
+            },
+            {
+                id: "u1_10",
+                unit: "第1單元 動物的世界",
+                question: "下列有關胎生動物繁殖特徵的敘述，哪一項是「不正確」的？",
+                options: ["受精卵發育養分主要由母體供給", "胚胎在母體子宮內發育成完整個體後產下", "受精卵的養分主要來自卵黃", "人類、狗與貓都屬於胎生動物"],
+                answer: 2,
+                explanation: "胎生動物胚胎發育養分由母體經臍帶胎盤供給；卵生動物胚胎養分才主要來自卵黃。"
+            },
+            {
+                id: "u1_11",
+                unit: "第1單元 動物的世界",
+                question: "下列哪一種動物的繁殖方式與其他三者「不同」（屬於胎生）？",
+                options: ["鬥魚", "蜥蜴", "台灣黑熊", "綠綠龜"],
+                answer: 2,
+                explanation: "台灣黑熊是哺乳類胎生動物；鬥魚、蜥蜴、綠綠龜皆為卵生動物。"
+            },
+            {
+                id: "u1_12",
+                unit: "第1單元 動物的世界",
+                question: "下列哪一項特徵是會由人類親代遺傳給子代的先天特徵？",
+                options: ["髮型剪成短髮", "手臂上的後天傷疤", "雙眼皮與單眼皮", "會騎腳踏車的技能"],
+                answer: 2,
+                explanation: "單/雙眼皮、酒窩、美人尖、拇指挺直彎曲等為基因遺傳特徵；髮型、傷疤與技能為後天因素。"
+            },
+            {
+                id: "u1_13",
+                unit: "第1單元 動物的世界",
+                question: "食蚜蠅身上具有明顯的黑黃相間條紋，長得很像蜜蜂但不具毒刺，這是屬於哪種生存適應？",
+                options: ["偽裝", "保護色", "擬態（模仿）", "警戒色"],
+                answer: 2,
+                explanation: "食蚜蠅外形模仿有毒螫針的蜜蜂以威嚇敵害，稱為「擬態（模仿）」。"
+            },
+
+            // 第二單元：聲音與光
+            {
+                id: "u2_1",
+                unit: "第2單元 聲音與光",
+                question: "我國《噪音管制法》判定聲音是否屬於管制噪音的主要客觀標準是依據？",
+                options: ["聲音音量的大小（分貝數）", "聲音音調的高低", "聲音好不好聽", "聽者當時的心情"],
+                answer: 0,
+                explanation: "噪音管制法主要是以分貝計實測聲音音量大小（分貝數 dB）來制定管制標準。"
+            },
+            {
+                id: "u2_2",
+                unit: "第2單元 聲音與光",
+                question: "測量聲音音量大小的物理單位是下列哪一個？",
+                options: ["公尺 (m)", "分貝 (dB)", "度 (kWh)", "公斤 (kg)"],
+                answer: 1,
+                explanation: "音量的單位為「分貝（dB）」，音調的單位為頻率赫茲（Hz）。"
+            },
+            {
+                id: "u2_3",
+                unit: "第2單元 聲音與光",
+                question: "下列哪一種方法「無法」有效防止或隔絕噪音對人體的危害？",
+                options: ["在地板鋪設厚地毯吸音", "在高架捷運軌道旁加裝隔音牆", "使用更大的聲音大吼大叫蓋過噪音", "靠近噪音源時佩戴防護耳罩"],
+                answer: 2,
+                explanation: "用更大的聲音大喊大叫只會產生更多噪音，加重對耳膜與耳朵的傷害。"
+            },
+            {
+                id: "u2_4",
+                unit: "第2單元 聲音與光",
+                question: "烏克麗麗或吉他中間中空的木盒構造稱為「音箱」，這個構造的主要功能是？",
+                options: ["使樂器產生的音量變大（共鳴）", "使樂器的音調變得極高", "改變樂器弦的粗細", "使聲音完全消音"],
+                answer: 0,
+                explanation: "樂器的音箱能產生空氣共鳴，顯著放大幅度，使產生的「音量變大」。"
+            },
+            {
+                id: "u2_5",
+                unit: "第2單元 聲音與光",
+                question: "敲擊鐵琴時，若以相同的力氣敲擊在「較短」的鐵片上，發出的聲音會有什麼特徵？",
+                options: ["音調較低", "音調較高", "音量較小", "聲音消失"],
+                answer: 1,
+                explanation: "鐵片或琴鍵越短，振動頻率越快，發出的聲音「音調（音高）越高」。"
+            },
+            {
+                id: "u2_6",
+                unit: "第2單元 聲音與光",
+                question: "吹奏直笛時，手指按壓的笛孔數量「越多」，內部形成的空氣柱越長，聲音會？",
+                options: ["音調越低", "音調越高", "音量越大", "音量越小"],
+                answer: 0,
+                explanation: "按壓笛孔越多，笛管內部空氣柱越長，振動越慢，產生的聲音「音調越低」。"
+            },
+            {
+                id: "u2_7",
+                unit: "第2單元 聲音與光",
+                question: "即使不看見對方的臉，我們也能透過聲音分辨是媽媽還是老師在說話，這是因為每個人的什麼不同？",
+                options: ["音量大小", "音調高低", "音色（聲音特色）", "說話速度"],
+                answer: 2,
+                explanation: "每個人聲帶構造與發聲特色不同，發出的「音色」不同，故能辨識人聲或樂器。"
+            },
+            {
+                id: "u2_8",
+                unit: "第2單元 聲音與光",
+                question: "當光從空氣中「斜斜射入」水中時，光的行進方向會發生偏折，這種現象稱為？",
+                options: ["光的反射", "光的折射", "光的直線傳播", "光的色散"],
+                answer: 1,
+                explanation: "光從一種介質斜射進入另一種介質時，因傳播速度不同產生偏折，稱為「折射」。"
+            },
+            {
+                id: "u2_9",
+                unit: "第2單元 聲音與光",
+                question: "下列哪一種生活常見現象屬於「光的折射」應用或現象？",
+                options: ["車子後視鏡看見後方路況", "平靜水面倒映山水景色", "游泳池底看起來感覺比實際深度淺", "用手影遊戲做出兔子造型"],
+                answer: 2,
+                explanation: "池底看起來變淺、水下吸管看似斷裂皆因折射；後視鏡與水倒影為反射；手影為直線傳播。"
+            },
+            {
+                id: "u2_10",
+                unit: "第2單元 聲音與光",
+                question: "放大鏡（凸透鏡）的鏡片構造具有什麼視覺特徵？",
+                options: ["中間較厚、四周較薄的透明透鏡", "中間較薄、四周較厚的透明透鏡", "一面為平面鏡一面為凹面鏡", "不透光的金屬鏡片"],
+                answer: 0,
+                explanation: "凸透鏡（放大鏡）中間厚、四周薄，能使光線產生折射會聚，具有放大影像與聚光作用。"
+            },
+            {
+                id: "u2_11",
+                unit: "第2單元 聲音與光",
+                question: "利用噴霧器製造人造彩虹時，操作者必須面對哪裡噴水霧才能看到彩虹？",
+                options: ["面對太陽向陽光噴水", "背對太陽向陰暗處噴水霧", "仰望太陽正上方噴水", "隨便哪裡都可以"],
+                answer: 1,
+                explanation: "製造彩虹時人必須「背對太陽」，陽光照射水滴產生折射與反射後折回眼睛才能看見彩虹。"
+            },
+            {
+                id: "u2_12",
+                unit: "第2單元 聲音與光",
+                question: "關於光與聲音傳播速度的比較，下列敘述何者正確？",
+                options: ["聲音比光快得多", "光速遠比聲速快得多", "兩者速度完全相同", "無法比較"],
+                answer: 1,
+                explanation: "光的傳播速度（約每秒30萬公里）遠遠快於聲音（空氣中約每秒340公尺），如先看到閃電後聽到雷聲。"
             }
+        ];
+
+        // 四大題組資料庫（題組不切題專區）
+        const rawGroupQuestions = [
+            // 題組一：家燕短文
+            {
+                id: "g_swallow",
+                tag: "題組一【家燕育雛與騎樓光照研究短文】",
+                stimulus: {
+                    title: "短文閱讀：家燕生態與育雛行為",
+                    content: `每年春天，家燕會從印尼、菲律賓等地飛來臺灣繁衍下一代，屬於夏季候鳥。在舊式騎樓建築較多的區域，很容易就能看到燕巢。<br><br>
+                    家燕通常停棲在電線上休息，在黃昏剛覓食完降落後排泄。研究發現當騎樓空間的燈光越強時，幼鳥夜間乞食與親鳥餵食的頻率都會增加，繁殖成功率也較高，這主要出現在四～六月繁殖季前期。親鳥在育雛時還會將幼鳥的「糞囊」啣到巢外丟棄，以保持巢內的衛生與清潔。`
+                },
+                subQuestions: [
+                    {
+                        id: "g1_1",
+                        question: "(1) 家燕在臺灣季節遷徙的分類中，屬於下列哪一種型態的鳥類？",
+                        options: ["留鳥", "過境鳥", "夏候鳥", "冬候鳥"],
+                        answer: 2,
+                        explanation: "家燕每年春季飛來臺灣繁殖，夏季結束後離開回到南方，因此屬於「夏候鳥」。"
+                    },
+                    {
+                        id: "g1_2",
+                        question: "(2) 根據短文敘述，在下列哪一種環境中最容易發現家燕築巢育雛？",
+                        options: ["舊式建築的騎樓屋檐下", "高樓大廈密閉玻璃窗邊", "海邊密集的防風灌木叢", "高山原始森林深處"],
+                        answer: 0,
+                        explanation: "舊式騎樓構造能防風避雨，且便於飛翔進出，是家燕偏好築巢育雛的環境。"
+                    },
+                    {
+                        id: "g1_3",
+                        question: "(3) 根據文章研究說明，下列哪一個月份最容易觀察到親鳥頻繁餵食幼鳥的繁忙景象？",
+                        options: ["一月", "五月", "九月", "十二月"],
+                        answer: 1,
+                        explanation: "文章指出四～六月是家燕繁殖季前期，親鳥餵食頻率最高，五月正好在此時間區間內。"
+                    }
+                ]
+            },
+            // 題組二：分貝圖表
+            {
+                id: "g_decibel",
+                tag: "題組二【生活聲音分貝與聽力傷害對照圖表】",
+                stimulus: {
+                    title: "圖表資料：生活常見聲音分貝數與對人體健康影響對照表",
+                    content: `
+                    <div class="bg-amber-50 p-3 rounded-xl border border-amber-200 text-xs text-slate-700 leading-relaxed space-y-1.5">
+                        <p class="font-bold text-amber-900">【常見聲音音量與影響對照數據】</p>
+                        <ul class="list-disc pl-4 space-y-1">
+                            <li><strong>20 ~ 40 分貝：</strong>樹林風吹聲（非常安靜，不影響睡眠）</li>
+                            <li><strong>30 ~ 60 分貝：</strong>冷氣機運轉聲（40分貝以上會開始微干擾睡眠）</li>
+                            <li><strong>40 ~ 65 分貝：</strong>一般交談對話聲（65分貝以上會干擾課堂學習與注意力）</li>
+                            <li><strong>70 ~ 90 分貝：</strong>擴音器叫賣聲、傳統民俗活動（長久暴露使工作效率降低）</li>
+                            <li><strong>80 ~ 110 分貝：</strong>建築工地機具運轉聲（90分貝以上長時間暴露恐造成聽力損失）</li>
+                            <li><strong>110 ~ 140 分貝：</strong>噴射飛機起飛引擎聲（120分貝以上易導致永久性聽力受損）</li>
+                        </ul>
+                    </div>
+                    `
+                },
+                subQuestions: [
+                    {
+                        id: "g2_1",
+                        question: "(1) 小萱夜間睡覺時聽到房間冷氣機運轉聲，此聲音音量最可能是多少分貝？",
+                        options: ["20 分貝", "40 分貝", "90 分貝", "140 分貝"],
+                        answer: 1,
+                        explanation: "冷氣機運轉聲約落在 30~60 分貝之間，40分貝為標準合理數據。"
+                    },
+                    {
+                        id: "g2_2",
+                        question: "(2) 在約 70 分貝的環境音量下進行下列哪一項活動，相對比較不受該音量干擾？",
+                        options: ["夜間睡眠", "課堂專心學習", "專心閱讀思考", "體力勞動與一般戶外工作"],
+                        answer: 3,
+                        explanation: "70分貝聲音已嚴重干擾睡眠與專心學習思考，但對一般戶外體力工作影響相對較小。"
+                    },
+                    {
+                        id: "g2_3",
+                        question: "(3) 在機場跑道協助飛機起降的地勤人員，工作時必須配戴「防護耳罩」，其主要目的是？",
+                        options: ["避免與同事聊天", "防止極高分貝噪音造成永久性聽力受損", "聽音樂舒緩壓力", "增添工作服裝造型風格"],
+                        answer: 1,
+                        explanation: "飛機引擎聲高達 110-140 分貝，佩戴防護耳罩能有效阻隔噪音，保護耳膜免受永久傷害。"
+                    },
+                    {
+                        id: "g2_4",
+                        question: "(4) 工地重型機具運轉產生的聲響約落在 80~110 分貝，這屬於噪音管制法管制的範疇嗎？",
+                        options: ["屬於噪音，超標需依法管制防制", "不屬於噪音，因為是工廠聲音", "只要好聽就不算噪音", "不一定，由天氣決定"],
+                        answer: 0,
+                        explanation: "音量超過法定管制標準且干擾情緒與健康即屬噪音，建築工地必須依噪音管制法規範採取防護隔音措施。"
+                    }
+                ]
+            },
+            // 題組三：遺傳特徵組合表
+            {
+                id: "g_genetics",
+                tag: "題組三【人體遺傳特徵組合圖表】",
+                stimulus: {
+                    title: "資料表格：小芳一家人的特徵對照表與組合代號說明",
+                    content: `
+                    <div class="overflow-x-auto my-2">
+                        <table class="min-w-full text-xs text-center border-collapse border border-slate-300 bg-white">
+                            <thead class="bg-teal-100 text-teal-900 font-bold">
+                                <tr>
+                                    <th class="border border-slate-300 p-1.5">成員</th>
+                                    <th class="border border-slate-300 p-1.5">眼皮特徵</th>
+                                    <th class="border border-slate-300 p-1.5">拇指特徵</th>
+                                    <th class="border border-slate-300 p-1.5">美人尖特徵</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="border border-slate-300 p-1.5 font-bold">爸爸</td>
+                                    <td class="border border-slate-300 p-1.5">雙眼皮</td>
+                                    <td class="border border-slate-300 p-1.5">拇指彎曲</td>
+                                    <td class="border border-slate-300 p-1.5">無美人尖</td>
+                                </tr>
+                                <tr class="bg-slate-50">
+                                    <td class="border border-slate-300 p-1.5 font-bold">媽媽</td>
+                                    <td class="border border-slate-300 p-1.5">雙眼皮</td>
+                                    <td class="border border-slate-300 p-1.5">拇指挺直</td>
+                                    <td class="border border-slate-300 p-1.5">有美人尖</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-slate-300 p-1.5 font-bold">哥哥</td>
+                                    <td class="border border-slate-300 p-1.5">雙眼皮</td>
+                                    <td class="border border-slate-300 p-1.5">拇指挺直</td>
+                                    <td class="border border-slate-300 p-1.5">無美人尖</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-xs bg-emerald-50 p-2.5 rounded-lg border border-emerald-200 text-emerald-900">
+                        <strong>組合代號說明：</strong><br>
+                        1號：雙眼皮＋有美人尖＋拇指彎曲 ｜ 2號：雙眼皮＋有美人尖＋拇指挺直<br>
+                        3號：雙眼皮＋無美人尖＋拇指彎曲 ｜ 4號：雙眼皮＋無美人尖＋拇指挺直
+                    </div>
+                    `
+                },
+                subQuestions: [
+                    {
+                        id: "g3_1",
+                        question: "(1) 對照上表特徵與組合代號，媽媽的遺傳特徵組合屬於幾號？",
+                        options: ["1 號", "2 號", "3 號", "4 號"],
+                        answer: 1,
+                        explanation: "媽媽特徵為雙眼皮＋有美人尖＋拇指挺直，完全符合 2 號組合定義。"
+                    },
+                    {
+                        id: "g3_2",
+                        question: "(2) 比較哥哥與爸爸的特徵，下列哪一項是哥哥與爸爸「不相同」的遺傳特徵？",
+                        options: ["眼皮（單/雙）", "拇指（挺直/彎曲）", "美人尖（有/無）", "耳垂緊貼"],
+                        answer: 1,
+                        explanation: "爸爸的拇指特徵為「彎曲」，哥哥的拇指特徵為「挺直」，兩人在拇指特徵上表現不同。"
+                    },
+                    {
+                        id: "g3_3",
+                        question: "(3) 爸爸、媽媽與哥哥三人在下列哪一項遺傳特徵上表現「完全相同」？",
+                        options: ["三人皆為雙眼皮", "三人拇指皆挺直", "三人皆有美人尖", "三人皆無美人尖"],
+                        answer: 0,
+                        explanation: "數據表格顯示爸爸、媽媽與哥哥三人的眼皮特徵欄位全部都是「雙眼皮」。"
+                    }
+                ]
+            },
+            // 題組四：自製吸管笛實驗
+            {
+                id: "g_flute",
+                tag: "題組四【自製吸管笛音調與音色實驗】",
+                stimulus: {
+                    title: "實驗說明：自製吸管笛結構與操作",
+                    content: `
+                    <div class="bg-sky-50 p-3 rounded-xl border border-sky-200 text-xs text-slate-800 leading-relaxed">
+                        <strong>【實驗步驟】</strong><br>
+                        小華利用剪刀、塑膠吸管、竹籤與濕棉花製作了一管「自製吸管笛」。<br>
+                        1. 將濕棉花裹在竹籤一端，塞入吸管內部作為可移動的活塞。<br>
+                        2. 演奏時嘴唇對準吸管頂端的吹口吹氣，使管內空氣柱振動發聲。<br>
+                        3. 吹氣時可以同時用手拉動竹籤，改變吸管內部空氣柱長短。
+                    </div>
+                    `
+                },
+                subQuestions: [
+                    {
+                        id: "g4_1",
+                        question: "(1) 當手將吸管內部的竹籤「由上往下拉動」時，空氣柱變長，吹出的聲音音調會？",
+                        options: ["音調變高", "音調變低", "音量變大", "完全沒聲音"],
+                        answer: 1,
+                        explanation: "竹籤往下開拉會使內部空氣柱變長，振動頻率變慢，發出的聲音「音調會變低」。"
+                    },
+                    {
+                        id: "g4_2",
+                        question: "(2) 若小華想要改變這個自製吹奏樂器發出的「音色」，下列哪一種做法最適當？",
+                        options: ["吹氣時使用更大的肺活量吹氣", "把竹籤往上推進", "將笛管材質從塑膠吸管更換成竹管", "用刀子將笛口切大"],
+                        answer: 2,
+                        explanation: "音色取決於發聲體與樂器的材質構造。將塑膠管更換為竹管或金屬管能明顯改變發出的「音色」。"
+                    }
+                ]
+            }
+        ];
+
+        // ------------------------------------------------------
+        // 全局應用程式狀態
+        // ------------------------------------------------------
+        let currentQuizList = []; // 當前測驗抽出的題目 (混合單題與題組)
+        let totalQuestionCount = 0; // 計算總子題數
+        let userAnswers = {}; // 記錄使用者的選擇
+        let scoreState = {
+            answered: 0,
+            correct: 0,
+            score: 0
         };
 
-        // 初始化期中考試題庫
-        quizBank.midterm.questions = [...quizBank.unit1.questions, ...quizBank.unit2.questions];
-
-        // 當前狀態
-        let currentQuizKey = 'unit1';
-        let userAnswers = {};
-        let isSubmitted = false;
-
-        // 頁面載入後初始化
+        // 頁面初次載入
         window.onload = function() {
-            renderQuiz('unit1');
+            startNewQuiz();
         };
 
-        // 切換測驗單元
-        function switchQuiz(key) {
-            currentQuizKey = key;
-            
-            // 更新 UI 頁籤狀態
-            document.querySelectorAll('.mode-btn').forEach(btn => {
-                btn.classList.remove('bg-white', 'text-teal-800', 'shadow-md');
-                btn.classList.add('bg-teal-700/60', 'text-white');
-            });
-            const activeBtn = document.getElementById(`btn-${key}`);
-            activeBtn.classList.remove('bg-teal-700/60', 'text-white');
-            activeBtn.classList.add('bg-white', 'text-teal-800', 'shadow-md');
-
-            renderQuiz(key);
-        }
-
-        // 渲染測驗內容
-        function renderQuiz(key) {
-            const data = quizBank[key];
+        // 開始新測驗 (處理題數抽取與重新發題)
+        function startNewQuiz() {
+            const mode = document.getElementById('mode-select').value;
             userAnswers = {};
-            isSubmitted = false;
+            scoreState = { answered: 0, correct: 0, score: 0 };
+            
+            // 洗牌函數
+            const shuffle = array => [...array].sort(() => Math.random() - 0.5);
 
-            // 標題更新
-            document.getElementById('quiz-title').innerText = data.title;
-            document.getElementById('quiz-tag').innerText = data.tag;
-            document.getElementById('quiz-desc').innerText = data.desc;
+            let selectedSingles = shuffle(rawSingleQuestions);
+            let selectedGroups = shuffle(rawGroupQuestions);
 
-            const container = document.getElementById('questions-container');
-            container.innerHTML = '';
+            currentQuizList = [];
+            totalQuestionCount = 0;
 
-            let questionIndex = 1;
-            let totalSubCount = 0;
+            if (mode === 'all') {
+                // 全部題目：包含所有單題與所有四大題組
+                currentQuizList = [...selectedGroups, ...selectedSingles];
+            } else {
+                const targetCount = parseInt(mode, 10);
+                
+                // 題組不切題原則：優先放入題組，再補充單題補足 targetCount
+                let currentCount = 0;
+                
+                // 隨機選取 1~2 個題組
+                for (let grp of selectedGroups) {
+                    if (currentCount + grp.subQuestions.length <= targetCount) {
+                        currentQuizList.push(grp);
+                        currentCount += grp.subQuestions.length;
+                    }
+                }
 
-            data.questions.forEach((qItem) => {
-                if (qItem.type === 'single') {
-                    totalSubCount++;
-                    const card = createSingleQuestionCard(qItem, questionIndex);
-                    container.appendChild(card);
-                    questionIndex++;
-                } else if (qItem.type === 'group') {
-                    // 題組題卡片包覆渲染（重點：不切題！）
-                    const groupCard = createGroupQuestionCard(qItem, questionIndex);
-                    container.appendChild(groupCard);
-                    questionIndex += qItem.subQuestions.length;
-                    totalSubCount += qItem.subQuestions.length;
+                // 補足剩下的單題數量
+                for (let sQ of selectedSingles) {
+                    if (currentCount < targetCount) {
+                        currentQuizList.push(sQ);
+                        currentCount++;
+                    } else {
+                        break;
+                    }
+                }
+            }
+
+            // 計算總題目數
+            totalQuestionCount = 0;
+            currentQuizList.forEach(item => {
+                if (item.subQuestions) {
+                    totalQuestionCount += item.subQuestions.length;
+                } else {
+                    totalQuestionCount++;
                 }
             });
 
-            document.getElementById('total-count').innerText = totalSubCount;
-            document.getElementById('answered-count').innerText = '0';
+            // 更新介面統計儀表板
+            updateDashboard();
+
+            // 渲染 DOM
+            renderQuizCards();
+
+            // 平滑滾動至頂部
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // 建立單題卡片
-        function createSingleQuestionCard(qData, indexNum) {
+        // 更新介面統計數據與進度條
+        function updateDashboard() {
+            document.getElementById('stat-total').innerText = `${totalQuestionCount} 題`;
+            document.getElementById('stat-answered').innerText = `${scoreState.answered} 題`;
+            document.getElementById('stat-correct').innerText = `${scoreState.correct} 題`;
+            
+            const currentScore = totalQuestionCount > 0 
+                ? Math.round((scoreState.correct / totalQuestionCount) * 100) 
+                : 0;
+            document.getElementById('stat-score').innerText = `${currentScore} 分`;
+
+            const percent = totalQuestionCount > 0 
+                ? Math.round((scoreState.answered / totalQuestionCount) * 100) 
+                : 0;
+            document.getElementById('progress-percent').innerText = `${percent}%`;
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+        }
+
+        // 渲染題目卡片到頁面
+        function renderQuizCards() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+
+            let questionNumber = 1;
+
+            currentQuizList.forEach((item) => {
+                if (item.subQuestions) {
+                    // 渲染題組題大卡片 (絕對不切題)
+                    const groupCard = renderGroupCard(item, questionNumber);
+                    container.appendChild(groupCard);
+                    questionNumber += item.subQuestions.length;
+                } else {
+                    // 渲染一般單選題
+                    const singleCard = renderSingleCard(item, questionNumber);
+                    container.appendChild(singleCard);
+                    questionNumber++;
+                }
+            });
+        }
+
+        // 渲染單選題卡片
+        function renderSingleCard(qData, num) {
             const card = document.createElement('div');
-            card.className = "bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-slate-200 transition-all hover:shadow-md";
-            card.id = `card-${qData.id}`;
+            card.className = "bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-slate-200 space-y-4 transition-all hover:shadow-md";
+            card.id = `card_${qData.id}`;
 
             let optionsHtml = '';
             qData.options.forEach((opt, idx) => {
                 optionsHtml += `
-                    <div class="relative flex items-center">
-                        <input type="radio" id="opt_${qData.id}_${idx}" name="q_${qData.id}" value="${idx}" 
-                               onchange="recordAnswer('${qData.id}', ${idx})" class="custom-radio sr-only">
-                        <label for="opt_${qData.id}_${idx}" class="w-full p-3.5 px-4 text-sm rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-teal-50/50 cursor-pointer flex items-center gap-3 transition-all">
-                            <span class="w-6 h-6 rounded-full border border-slate-300 bg-white flex items-center justify-center font-bold text-xs text-slate-500 shrink-0">${idx + 1}</span>
-                            <span class="text-slate-700 font-medium">${opt}</span>
-                        </label>
-                    </div>
+                    <button type="button" 
+                            id="btn_${qData.id}_${idx}" 
+                            onclick="handleAnswerSelect('${qData.id}', ${idx}, ${qData.answer})"
+                            class="option-btn w-full p-3.5 px-4 text-left text-sm rounded-xl border border-slate-200 bg-slate-50/50 flex items-center justify-between gap-3 text-slate-700">
+                        <div class="flex items-center gap-3">
+                            <span class="w-6 h-6 rounded-full bg-slate-200 text-slate-600 font-bold text-xs flex items-center justify-center shrink-0 border border-slate-300">${idx + 1}</span>
+                            <span class="font-medium">${opt}</span>
+                        </div>
+                        <span id="badge_${qData.id}_${idx}" class="text-base"></span>
+                    </button>
                 `;
             });
 
             card.innerHTML = `
-                <div class="flex items-center gap-2 mb-3">
-                    <span class="bg-teal-100 text-teal-800 text-xs font-black px-2.5 py-1 rounded-md">第 ${indexNum} 題</span>
-                    <span class="bg-slate-100 text-slate-600 text-xs font-bold px-2 py-0.5 rounded">${qData.tag}</span>
+                <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                    <span class="bg-teal-100 text-teal-800 font-black text-xs px-2.5 py-1 rounded-md">第 ${num} 題</span>
+                    <span class="text-xs font-bold text-slate-400">${qData.unit}</span>
                 </div>
-                <h3 class="text-base sm:text-lg font-bold text-slate-800 mb-4 leading-relaxed">${qData.question}</h3>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                <h3 class="text-base sm:text-lg font-bold text-slate-800 leading-relaxed">${qData.question}</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     ${optionsHtml}
                 </div>
-                <div id="explain_${qData.id}" class="hidden mt-4 p-4 rounded-xl bg-amber-50 border-l-4 border-amber-400 text-xs sm:text-sm text-amber-900 leading-relaxed">
-                    <strong>💡 詳細解析：</strong> ${qData.explanation}
+                <!-- 即時解析區 -->
+                <div id="explain_${qData.id}" class="hidden p-4 rounded-xl bg-amber-50 border-l-4 border-amber-400 text-xs sm:text-sm text-amber-900 leading-relaxed space-y-1">
+                    <div class="font-bold flex items-center gap-1.5 text-amber-950">
+                        <span>💡 觀念詳細解析：</span>
+                    </div>
+                    <p>${qData.explanation}</p>
                 </div>
             `;
             return card;
         }
 
-        // 建立題組卡片（確保整體包含短文背景與所有子題於同一個區域中）
-        function createGroupQuestionCard(gData, startIndex) {
+        // 渲染題組題卡片 (大容器包裹情境 + 所有子題)
+        function renderGroupCard(gData, startNum) {
             const card = document.createElement('div');
-            // 題組外層採用明顯的顏色外框，確保題組視覺一體化
-            card.className = "group-card bg-white rounded-3xl p-5 sm:p-7 shadow-md border-2 border-teal-300 relative border-l-8 border-l-teal-600 space-y-6";
+            card.className = "group-container bg-white rounded-3xl p-5 sm:p-7 shadow-md border-2 border-teal-300 border-l-8 border-l-teal-600 space-y-5";
 
-            // 題組大頭標誌與背景短文/數據表
-            let subQuestionsHtml = '';
-            let subIdx = startIndex;
+            let subHtml = '';
+            let currentNum = startNum;
 
             gData.subQuestions.forEach((subQ) => {
-                let subOptionsHtml = '';
+                let optionsHtml = '';
                 subQ.options.forEach((opt, idx) => {
-                    subOptionsHtml += `
-                        <div class="relative flex items-center">
-                            <input type="radio" id="opt_${subQ.id}_${idx}" name="q_${subQ.id}" value="${idx}" 
-                                   onchange="recordAnswer('${subQ.id}', ${idx})" class="custom-radio sr-only">
-                            <label for="opt_${subQ.id}_${idx}" class="w-full p-3 px-3.5 text-sm rounded-xl border border-slate-200 bg-white hover:bg-teal-50/60 cursor-pointer flex items-center gap-2.5 transition-all">
-                                <span class="w-5 h-5 rounded-full border border-slate-300 bg-slate-100 flex items-center justify-center font-bold text-xs text-slate-600 shrink-0">${idx + 1}</span>
-                                <span class="text-slate-700 font-medium">${opt}</span>
-                            </label>
-                        </div>
+                    optionsHtml += `
+                        <button type="button" 
+                                id="btn_${subQ.id}_${idx}" 
+                                onclick="handleAnswerSelect('${subQ.id}', ${idx}, ${subQ.answer})"
+                                class="option-btn w-full p-3 px-3.5 text-left text-sm rounded-xl border border-slate-200 bg-white flex items-center justify-between gap-2.5 text-slate-700">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-5 h-5 rounded-full bg-slate-100 text-slate-600 font-bold text-xs flex items-center justify-center shrink-0 border border-slate-300">${idx + 1}</span>
+                                <span class="font-medium">${opt}</span>
+                            </div>
+                            <span id="badge_${subQ.id}_${idx}" class="text-base"></span>
+                        </button>
                     `;
                 });
 
-                subQuestionsHtml += `
-                    <div class="bg-slate-50/80 p-4 sm:p-5 rounded-2xl border border-slate-200/80" id="card-${subQ.id}">
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="bg-teal-600 text-white text-xs font-black px-2.5 py-0.5 rounded-full">子題 ${subIdx}</span>
+                subHtml += `
+                    <div class="bg-slate-50/80 p-4 sm:p-5 rounded-2xl border border-slate-200 space-y-3" id="card_${subQ.id}">
+                        <div class="flex items-center gap-2">
+                            <span class="bg-teal-600 text-white font-black text-xs px-2.5 py-0.5 rounded-full">子題 ${currentNum}</span>
                         </div>
-                        <h4 class="text-sm sm:text-base font-bold text-slate-800 mb-3 leading-relaxed">${subQ.question}</h4>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                            ${subOptionsHtml}
+                        <h4 class="text-sm sm:text-base font-bold text-slate-800 leading-relaxed">${subQ.question}</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            ${optionsHtml}
                         </div>
-                        <div id="explain_${subQ.id}" class="hidden mt-3 p-3.5 rounded-xl bg-amber-50 border-l-4 border-amber-400 text-xs sm:text-sm text-amber-900 leading-relaxed">
-                            <strong>💡 詳細解析：</strong> ${subQ.explanation}
+                        <!-- 即時解析區 -->
+                        <div id="explain_${subQ.id}" class="hidden p-3.5 rounded-xl bg-amber-50 border-l-4 border-amber-400 text-xs sm:text-sm text-amber-900 leading-relaxed">
+                            <strong>💡 觀念解析：</strong> ${subQ.explanation}
                         </div>
                     </div>
                 `;
-                subIdx++;
+                currentNum++;
             });
 
             card.innerHTML = `
-                <!-- 題組抬頭 -->
+                <!-- 題組標頭 -->
                 <div class="flex flex-wrap items-center justify-between gap-2 border-b border-teal-100 pb-3">
                     <div class="flex items-center gap-2">
                         <span class="bg-teal-700 text-white font-black text-xs px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1">
-                            <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-                            題組不切題專區
+                            📌 題組不切題專區
                         </span>
                         <h3 class="text-base sm:text-lg font-black text-teal-900">${gData.tag}</h3>
                     </div>
-                    <span class="text-xs text-teal-700 font-bold">子題涵蓋：第 ${startIndex} ~ ${subIdx - 1} 題</span>
+                    <span class="text-xs text-teal-700 font-bold">涵蓋子題：第 ${startNum} ~ ${currentNum - 1} 題</span>
                 </div>
 
-                <!-- 閱讀情境/資料框 -->
-                <div class="bg-gradient-to-br from-teal-50/70 to-emerald-50/70 rounded-2xl p-4 sm:p-5 border border-teal-200">
-                    <h4 class="font-bold text-teal-900 text-sm mb-2 flex items-center gap-1.5">
+                <!-- 閱讀情境 / 數據圖表區 -->
+                <div class="bg-gradient-to-br from-teal-50/80 to-emerald-50/80 rounded-2xl p-4 sm:p-5 border border-teal-200 space-y-2">
+                    <h4 class="font-bold text-teal-900 text-sm flex items-center gap-1.5">
                         <svg class="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                         ${gData.stimulus.title}
                     </h4>
@@ -588,115 +811,91 @@
                     </div>
                 </div>
 
-                <!-- 題組內部子題連續呈現 -->
-                <div class="space-y-4 pt-2">
-                    ${subQuestionsHtml}
+                <!-- 子題集合 -->
+                <div class="space-y-4 pt-1">
+                    ${subHtml}
                 </div>
             `;
-
             return card;
         }
 
-        // 記錄答案
-        function recordAnswer(qId, selectedIdx) {
+        // 處理使用者點擊選項時的「即時反饋」邏輯
+        function handleAnswerSelect(qId, selectedIdx, correctIdx) {
+            if (userAnswers[qId] !== undefined) return; // 避免重複作答
+
             userAnswers[qId] = selectedIdx;
-            document.getElementById('answered-count').innerText = Object.keys(userAnswers).length;
-        }
+            scoreState.answered++;
 
-        // 清空重填
-        function resetAnswers() {
-            userAnswers = {};
-            isSubmitted = false;
-            document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
-            document.getElementById('answered-count').innerText = '0';
-            
-            // 隱藏所有解析與顏色回復
-            document.querySelectorAll('[id^="explain_"]').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('label').forEach(lbl => {
-                lbl.classList.remove('bg-emerald-100', 'border-emerald-500', 'bg-rose-100', 'border-rose-500', 'text-emerald-900', 'text-rose-900');
-            });
-        }
+            const isCorrect = (selectedIdx === correctIdx);
+            if (isCorrect) scoreState.correct++;
 
-        // 提交試卷與評分計算
-        function submitQuiz() {
-            const data = quizBank[currentQuizKey];
-            let totalQuestions = 0;
-            let correctCount = 0;
-
-            // 走訪算分與解析顯示
-            data.questions.forEach((item) => {
-                if (item.type === 'single') {
-                    totalQuestions++;
-                    const userAns = userAnswers[item.id];
-                    const isCorrect = (userAns === item.answer);
-                    if (isCorrect) correctCount++;
-
-                    highlightOption(item.id, item.answer, userAns);
-                    document.getElementById(`explain_${item.id}`).classList.remove('hidden');
-
-                } else if (item.type === 'group') {
-                    item.subQuestions.forEach((subQ) => {
-                        totalQuestions++;
-                        const userAns = userAnswers[subQ.id];
-                        const isCorrect = (userAns === subQ.answer);
-                        if (isCorrect) correctCount++;
-
-                        highlightOption(subQ.id, subQ.answer, userAns);
-                        document.getElementById(`explain_${subQ.id}`).classList.remove('hidden');
-                    });
+            // 禁用該題所有選項並標示正確與錯誤樣式
+            const optionsBtns = document.querySelectorAll(`[id^="btn_${qId}_"]`);
+            optionsBtns.forEach((btn, idx) => {
+                btn.disabled = true;
+                if (idx === correctIdx) {
+                    btn.classList.add('opt-correct');
+                    document.getElementById(`badge_${qId}_${idx}`).innerText = '⭕ 正確';
+                } else if (idx === selectedIdx && !isCorrect) {
+                    btn.classList.add('opt-wrong');
+                    document.getElementById(`badge_${qId}_${idx}`).innerText = '❌ 錯誤';
                 }
             });
 
-            const score = Math.round((correctCount / totalQuestions) * 100);
-            
-            // 展示 Modal 評分結果
-            document.getElementById('final-score').innerText = score;
-            document.getElementById('result-quiz-name').innerText = data.title;
-            
-            const badgeEl = document.getElementById('score-badge');
-            const feedbackEl = document.getElementById('score-feedback');
+            // 顯示該題解析
+            const explainBox = document.getElementById(`explain_${qId}`);
+            if (explainBox) explainBox.classList.remove('hidden');
 
-            if (score >= 90) {
-                badgeEl.innerText = "🌟 自然小博士";
-                badgeEl.className = "inline-block mt-3 px-4 py-1.5 rounded-full text-sm font-bold bg-emerald-600 text-white shadow-sm";
-                feedbackEl.innerText = "太棒了！你的自然觀念極為清晰，表現完美！";
-            } else if (score >= 75) {
-                badgeEl.innerText = "🎉 優秀小科學家";
-                badgeEl.className = "inline-block mt-3 px-4 py-1.5 rounded-full text-sm font-bold bg-teal-600 text-white shadow-sm";
-                feedbackEl.innerText = "表現非常好！稍微複習錯題解析就能邁向滿分喔！";
+            // 即時更新進度儀表板
+            updateDashboard();
+
+            // 若全部作答完畢，開啟獎勵視窗
+            if (scoreState.answered === totalQuestionCount) {
+                setTimeout(showFinishModal, 500);
+            }
+        }
+
+        // 顯示測驗結束視窗
+        function showFinishModal() {
+            const score = Math.round((scoreState.correct / totalQuestionCount) * 100);
+            document.getElementById('modal-score').innerText = score;
+            
+            const badge = document.getElementById('modal-badge');
+            const desc = document.getElementById('modal-desc');
+
+            if (score === 100) {
+                badge.innerText = "🏆 滿分！自然小學霸";
+                badge.className = "inline-block px-3.5 py-1 rounded-full text-xs font-bold bg-emerald-600 text-white mt-2";
+                desc.innerText = "太厲害了！你對康軒版自然科 5上 所有的動物、聲音與光的觀念完全掌握！";
+            } else if (score >= 80) {
+                badge.innerText = "🌟 優秀！自然高分高手";
+                badge.className = "inline-block px-3.5 py-1 rounded-full text-xs font-bold bg-teal-600 text-white mt-2";
+                desc.innerText = "表現非常傑出！仔細對照剛才錯題的觀念解析，下次一定能拿滿分！";
             } else if (score >= 60) {
-                badgeEl.innerText = "👍 繼續加油";
-                badgeEl.className = "inline-block mt-3 px-4 py-1.5 rounded-full text-sm font-bold bg-amber-500 text-white shadow-sm";
-                feedbackEl.innerText = "已經及格囉！建議閱讀下方試題解析加強較弱的觀念。";
+                badge.innerText = "👍 及格！觀念漸入佳境";
+                badge.className = "inline-block px-3.5 py-1 rounded-full text-xs font-bold bg-amber-500 text-white mt-2";
+                desc.innerText = "恭喜通過測驗！建議瀏覽剛才標記黃色的觀念解析，鞏固記憶。";
             } else {
-                badgeEl.innerText = "📚 需多加複習";
-                badgeEl.className = "inline-block mt-3 px-4 py-1.5 rounded-full text-sm font-bold bg-rose-500 text-white shadow-sm";
-                feedbackEl.innerText = "沒關係，仔細對照下方的詳細解析，再重新挑戰一次！";
+                badge.innerText = "📚 努力！考前繼續加油";
+                badge.className = "inline-block px-3.5 py-1 rounded-full text-xs font-bold bg-rose-500 text-white mt-2";
+                desc.innerText = "沒關係，自然科需要多看圖片與題目解析，對照下方的詳細說明再試一次吧！";
             }
 
-            document.getElementById('result-modal').classList.remove('hidden');
-            isSubmitted = true;
+            document.getElementById('finish-modal').classList.remove('hidden');
         }
 
-        // 標記正確與錯誤選項
-        function highlightOption(qId, correctIdx, userAns) {
-            const correctLabel = document.querySelector(`label[for="opt_${qId}_${correctIdx}"]`);
-            if (correctLabel) {
-                correctLabel.classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-900', 'font-bold');
-            }
+        // 複製網址功能
+        function copyShareUrl() {
+            const dummy = document.createElement('input');
+            document.body.appendChild(dummy);
+            dummy.value = window.location.href;
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
 
-            if (userAns !== undefined && userAns !== correctIdx) {
-                const wrongLabel = document.querySelector(`label[for="opt_${qId}_${userAns}"]`);
-                if (wrongLabel) {
-                    wrongLabel.classList.add('bg-rose-100', 'border-rose-500', 'text-rose-900');
-                }
-            }
-        }
-
-        // 關閉得分彈窗並滑動檢討
-        function closeModalAndReview() {
-            document.getElementById('result-modal').classList.add('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            const btnText = document.getElementById('copy-btn-text');
+            btnText.innerText = '已複製網址！';
+            setTimeout(() => { btnText.innerText = '複製測驗網址'; }, 2000);
         }
     </script>
 </body>
