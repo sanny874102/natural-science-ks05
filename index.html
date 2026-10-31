@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>康軒版 國小自然 5上 完整線上題庫</title>
+    <title>康軒版 國小自然 5上 完整線上題庫 (單頁卡片版)</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -38,10 +38,13 @@
             color: #9f1239 !important;
             font-weight: 700;
         }
-        /* 題組容器防止切題 */
-        .group-container {
-            break-inside: avoid;
-            page-break-inside: avoid;
+        /* 卡片切換淡入動畫 */
+        .card-fade-in {
+            animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -49,7 +52,7 @@
 
     <!-- 頂部頁首導覽 -->
     <header class="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-700 text-white shadow-md sticky top-0 z-50">
-        <div class="max-w-5xl mx-auto px-4 py-3.5 flex flex-col md:flex-row justify-between items-center gap-3">
+        <div class="max-w-4xl mx-auto px-4 py-3.5 flex flex-col sm:flex-row justify-between items-center gap-3">
             <div class="flex items-center gap-3">
                 <div class="bg-white/20 p-2 rounded-xl backdrop-blur-sm shrink-0">
                     <svg class="w-7 h-7 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -57,76 +60,76 @@
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-xl font-black tracking-wide flex items-center gap-2">
-                        康軒版 國小自然 5上 完整線上題庫
-                        <span class="bg-amber-400 text-teal-950 text-xs px-2 py-0.5 rounded-full font-bold">隨堂單＋月考全收錄</span>
+                    <h1 class="text-lg sm:text-xl font-black tracking-wide flex items-center gap-2">
+                        康軒版 國小自然 5上 線上測驗
+                        <span class="bg-amber-400 text-teal-950 text-xs px-2 py-0.5 rounded-full font-bold">單頁卡片模式</span>
                     </h1>
-                    <p class="text-xs text-teal-100">第1單元動物的世界 · 第2單元聲音與光 · 期中評量考卷</p>
+                    <p class="text-xs text-teal-100">第1單元動物的世界 · 第2單元聲音與光 · 期中評量題庫</p>
                 </div>
             </div>
 
-            <!-- 分享按鈕 -->
-            <button onclick="copyShareUrl()" class="text-xs bg-white/15 hover:bg-white/25 border border-white/30 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all active:scale-95">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                <span id="copy-btn-text">複製測驗網址</span>
-            </button>
+            <!-- 分享與新測驗按鈕 -->
+            <div class="flex items-center gap-2">
+                <button onclick="copyShareUrl()" class="text-xs bg-white/15 hover:bg-white/25 border border-white/30 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all active:scale-95">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    <span id="copy-btn-text">複製網址</span>
+                </button>
+            </div>
         </div>
     </header>
 
     <!-- 主要內容區 -->
-    <main class="max-w-5xl mx-auto px-4 py-6 flex-grow w-full space-y-6">
+    <main class="max-w-4xl mx-auto px-4 py-6 flex-grow w-full space-y-5">
 
-        <!-- 測驗設定與進度控制控制台 -->
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-emerald-100 space-y-4">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-100 pb-4">
-                <div class="flex items-center gap-3">
-                    <span class="text-2xl">🌱</span>
+        <!-- 控制儀表板：題數設定 + 答題進度條 -->
+        <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-emerald-100 space-y-4">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-100 pb-3.5">
+                <div class="flex items-center gap-2.5">
+                    <span class="text-2xl">🌿</span>
                     <div>
-                        <h2 class="text-base font-bold text-slate-800">選擇測驗模式與題數：</h2>
-                        <p class="text-xs text-slate-500">系統將自動抽題，點擊答案後將「即時顯示對錯與解析」。</p>
+                        <h2 class="text-sm sm:text-base font-bold text-slate-800">選擇測驗題數模式：</h2>
+                        <p class="text-xs text-slate-500">每頁僅顯示單一題目或完整題組，即時顯示對錯與觀念解析。</p>
                     </div>
                 </div>
 
-                <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
-                    <!-- 下拉選單 -->
-                    <select id="mode-select" class="bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-xl font-bold p-2.5 pr-8 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none w-full md:w-auto">
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <select id="mode-select" class="bg-slate-50 border border-slate-300 text-slate-800 text-xs sm:text-sm rounded-xl font-bold p-2 pr-7 focus:ring-2 focus:ring-teal-500 outline-none w-full sm:w-auto">
                         <option value="10">挑戰 10 題 (快速隨機練習)</option>
                         <option value="25" selected>挑戰 25 題 (精選中量測驗)</option>
                         <option value="50">挑戰 50 題 (考前實力衝刺)</option>
                         <option value="all">挑戰全部完整題庫 (全套隨堂單與考卷)</option>
                     </select>
 
-                    <button onclick="startNewQuiz()" class="px-5 py-2.5 bg-gradient-to-r from-teal-600 to-emerald-600 text-white font-bold text-sm rounded-xl shadow-md hover:from-teal-700 hover:to-emerald-700 active:scale-95 transition-all flex items-center justify-center gap-1.5 w-full md:w-auto">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        ▶ 開始新測驗
+                    <button onclick="startNewQuiz()" class="px-4 py-2 bg-gradient-to-r from-teal-600 to-emerald-600 text-white font-bold text-xs sm:text-sm rounded-xl shadow-md hover:from-teal-700 hover:to-emerald-700 active:scale-95 transition-all shrink-0">
+                        🔄 重新抽題
                     </button>
                 </div>
             </div>
 
-            <!-- 即時統計與進度條儀表板 -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                    <div class="text-xs text-slate-500 font-medium">題目總數</div>
-                    <div class="text-lg font-black text-slate-700" id="stat-total">0 題</div>
+            <!-- 即時答題狀態與關卡進度 -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center">
+                <div class="bg-slate-50 p-2 rounded-xl border border-slate-200">
+                    <div class="text-xs text-slate-500">卡片進度 (關卡)</div>
+                    <div class="text-base font-black text-teal-700" id="stat-card-progress">0 / 0 頁</div>
                 </div>
-                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                    <div class="text-xs text-slate-500 font-medium">已作答</div>
-                    <div class="text-lg font-black text-teal-600" id="stat-answered">0 題</div>
+                <div class="bg-slate-50 p-2 rounded-xl border border-slate-200">
+                    <div class="text-xs text-slate-500">已回答子題</div>
+                    <div class="text-base font-black text-slate-700" id="stat-answered">0 / 0 題</div>
                 </div>
-                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                    <div class="text-xs text-slate-500 font-medium">答對題數</div>
-                    <div class="text-lg font-black text-emerald-600" id="stat-correct">0 題</div>
+                <div class="bg-slate-50 p-2 rounded-xl border border-slate-200">
+                    <div class="text-xs text-slate-500">答對子題</div>
+                    <div class="text-base font-black text-emerald-600" id="stat-correct">0 題</div>
                 </div>
-                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                    <div class="text-xs text-slate-500 font-medium">目前即時得分</div>
-                    <div class="text-lg font-black text-amber-600" id="stat-score">0 分</div>
+                <div class="bg-slate-50 p-2 rounded-xl border border-slate-200">
+                    <div class="text-xs text-slate-500">即時計算得分</div>
+                    <div class="text-base font-black text-amber-600" id="stat-score">0 分</div>
                 </div>
             </div>
 
             <!-- 進度條 -->
             <div class="space-y-1">
                 <div class="flex justify-between text-xs text-slate-500 font-bold">
-                    <span>答題進度</span>
+                    <span>總題目累積完成進度</span>
                     <span id="progress-percent">0%</span>
                 </div>
                 <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden border border-slate-200">
@@ -135,12 +138,33 @@
             </div>
         </div>
 
-        <!-- 試題卡片列表區域 -->
-        <div id="quiz-container" class="space-y-6">
-            <!-- 題目與題組卡片將由 JavaScript 動態生成 -->
+        <!-- 核心區域：單頁卡片容器 (一次只呈現一題或一個題組) -->
+        <div id="quiz-card-container" class="min-h-[380px]">
+            <!-- JavaScript 動態渲染目前當前卡片 -->
         </div>
 
-        <!-- 測驗完成結果 Modal / 評語 -->
+        <!-- 卡片底部切換按鈕區 -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex items-center justify-between gap-3">
+            <button id="prev-btn" onclick="changeCard(-1)" class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-bold text-xs sm:text-sm flex items-center gap-1.5 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition-all">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+                上一頁 (上一題/題組)
+            </button>
+
+            <span class="text-xs text-slate-500 font-bold hidden sm:inline" id="card-footer-info">
+                提示：請完成本頁問題後切換下一頁
+            </span>
+
+            <button id="next-btn" onclick="changeCard(1)" class="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs sm:text-sm flex items-center gap-1.5 shadow-md active:scale-95 transition-all">
+                下一頁 (下一題/題組)
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+            </button>
+
+            <button id="finish-btn" onclick="showFinishModal()" class="hidden px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-emerald-600 text-white font-black text-xs sm:text-sm flex items-center gap-1.5 shadow-lg hover:from-amber-600 hover:to-emerald-700 active:scale-95 transition-all">
+                🏆 完成測驗觀看成績
+            </button>
+        </div>
+
+        <!-- 測驗完成成績 Modal -->
         <div id="finish-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border-4 border-teal-500 text-center space-y-5">
                 <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto border-4 border-emerald-300 text-3xl">
@@ -154,20 +178,20 @@
                 <div class="bg-teal-50 p-5 rounded-2xl border border-teal-200 space-y-1">
                     <div class="text-xs text-teal-700 font-bold uppercase">最終測驗成績</div>
                     <div class="text-5xl font-black text-teal-600"><span id="modal-score">0</span> <span class="text-base font-normal text-slate-500">分</span></div>
-                    <div id="modal-badge" class="inline-block px-3.5 py-1 rounded-full text-xs font-bold bg-teal-600 text-white mt-2">
-                        評語計算中
+                    <div id="modal-badge" class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-teal-600 text-white mt-2">
+                        計算評語中
                     </div>
                 </div>
 
-                <p class="text-sm text-slate-600 leading-relaxed" id="modal-desc">
-                    您已完成所有試題作答！可以留在頁面上詳細瀏覽每一題的觀念解析。
+                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed" id="modal-desc">
+                    您已完成所有試題作答！您可以關閉此視窗自由點選「上一頁/下一頁」重新複習觀念解析。
                 </p>
 
                 <div class="flex gap-3">
-                    <button onclick="document.getElementById('finish-modal').classList.add('hidden')" class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-bold text-sm w-full hover:bg-slate-100">
-                        查看解析
+                    <button onclick="document.getElementById('finish-modal').classList.add('hidden')" class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-bold text-xs sm:text-sm w-full hover:bg-slate-100">
+                        查看本頁解析
                     </button>
-                    <button onclick="document.getElementById('finish-modal').classList.add('hidden'); startNewQuiz();" class="px-4 py-2.5 rounded-xl bg-teal-600 text-white font-bold text-sm w-full hover:bg-teal-700 shadow-md">
+                    <button onclick="document.getElementById('finish-modal').classList.add('hidden'); startNewQuiz();" class="px-4 py-2.5 rounded-xl bg-teal-600 text-white font-bold text-xs sm:text-sm w-full hover:bg-teal-700 shadow-md">
                         再測一次
                     </button>
                 </div>
@@ -177,14 +201,14 @@
     </main>
 
     <!-- 頁尾 -->
-    <footer class="bg-slate-800 text-slate-400 text-xs text-center py-6 mt-12 border-t border-slate-700">
+    <footer class="bg-slate-800 text-slate-400 text-xs text-center py-6 mt-10 border-t border-slate-700">
         <p class="font-medium">康軒版 國小五年級自然科學 上學期線上練習題庫系統</p>
-        <p class="mt-1 text-slate-500">收錄隨堂練習單第1~7回、第一次月考卷A/B卷、期中考A卷全系列題型與題組</p>
+        <p class="mt-1 text-slate-500">單頁卡片模式 (單題 / 題組不切題專區)</p>
     </footer>
 
     <script>
         // ------------------------------------------------------
-        // 完整康軒 5上 自然科題庫資料庫 (涵蓋單題與四大題組題)
+        // 完整康軒 5上 自然科題庫資料庫
         // ------------------------------------------------------
         const rawSingleQuestions = [
             // 第一單元：動物的世界
@@ -575,7 +599,7 @@
                     {
                         id: "g4_2",
                         question: "(2) 若小華想要改變這個自製吹奏樂器發出的「音色」，下列哪一種做法最適當？",
-                        options: ["吹氣時使用更大的肺活量吹氣", "把竹籤往上推進", "將笛管材質從塑膠吸管更換成竹管", "用刀子將笛口切大"],
+                        options: ["吹氣時使用更大的肺活量吹氣", "把竹籤往上推進", "將笛管材質從塑塑吸管更換成竹管", "用刀子將笛口切大"],
                         answer: 2,
                         explanation: "音色取決於發聲體與樂器的材質構造。將塑膠管更換為竹管或金屬管能明顯改變發出的「音色」。"
                     }
@@ -584,130 +608,134 @@
         ];
 
         // ------------------------------------------------------
-        // 全局應用程式狀態
+        // 單頁卡片式 (Pagination) 狀態管理
         // ------------------------------------------------------
-        let currentQuizList = []; // 當前測驗抽出的題目 (混合單題與題組)
-        let totalQuestionCount = 0; // 計算總子題數
-        let userAnswers = {}; // 記錄使用者的選擇
+        let currentQuizCards = []; // 卡片陣列（每張卡片代表 1 個單題 或 1 個完整題組）
+        let currentCardIndex = 0;   // 當前顯示的卡片索引 (0-based)
+        let totalSubQuestionCount = 0; // 總子題數量
+        let userAnswers = {};      // 使用者答題記錄 { qId: optionIndex }
         let scoreState = {
             answered: 0,
-            correct: 0,
-            score: 0
+            correct: 0
         };
 
-        // 頁面初次載入
+        // 頁面初始化
         window.onload = function() {
             startNewQuiz();
         };
 
-        // 開始新測驗 (處理題數抽取與重新發題)
+        // 開始新測驗 (重新抽取題目並轉為卡片結構)
         function startNewQuiz() {
             const mode = document.getElementById('mode-select').value;
             userAnswers = {};
-            scoreState = { answered: 0, correct: 0, score: 0 };
-            
-            // 洗牌函數
+            scoreState = { answered: 0, correct: 0 };
+            currentCardIndex = 0;
+
             const shuffle = array => [...array].sort(() => Math.random() - 0.5);
 
             let selectedSingles = shuffle(rawSingleQuestions);
             let selectedGroups = shuffle(rawGroupQuestions);
 
-            currentQuizList = [];
-            totalQuestionCount = 0;
+            currentQuizCards = [];
+            totalSubQuestionCount = 0;
+
+            let globalQuestionNumber = 1;
 
             if (mode === 'all') {
-                // 全部題目：包含所有單題與所有四大題組
-                currentQuizList = [...selectedGroups, ...selectedSingles];
+                // 將所有題組先包裝為卡片
+                selectedGroups.forEach(grp => {
+                    currentQuizCards.push({
+                        type: 'group',
+                        data: grp,
+                        startNum: globalQuestionNumber
+                    });
+                    globalQuestionNumber += grp.subQuestions.length;
+                    totalSubQuestionCount += grp.subQuestions.length;
+                });
+
+                // 將所有單題包裝為卡片
+                selectedSingles.forEach(sQ => {
+                    currentQuizCards.push({
+                        type: 'single',
+                        data: sQ,
+                        num: globalQuestionNumber
+                    });
+                    globalQuestionNumber++;
+                    totalSubQuestionCount++;
+                });
             } else {
                 const targetCount = parseInt(mode, 10);
-                
-                // 題組不切題原則：優先放入題組，再補充單題補足 targetCount
-                let currentCount = 0;
-                
-                // 隨機選取 1~2 個題組
+                let currentSubQCount = 0;
+
+                // 優先裝載 1~2 個題組（題組不切題）
                 for (let grp of selectedGroups) {
-                    if (currentCount + grp.subQuestions.length <= targetCount) {
-                        currentQuizList.push(grp);
-                        currentCount += grp.subQuestions.length;
+                    if (currentSubQCount + grp.subQuestions.length <= targetCount) {
+                        currentQuizCards.push({
+                            type: 'group',
+                            data: grp,
+                            startNum: globalQuestionNumber
+                        });
+                        globalQuestionNumber += grp.subQuestions.length;
+                        currentSubQCount += grp.subQuestions.length;
                     }
                 }
 
-                // 補足剩下的單題數量
+                // 補充單題至指定題數
                 for (let sQ of selectedSingles) {
-                    if (currentCount < targetCount) {
-                        currentQuizList.push(sQ);
-                        currentCount++;
+                    if (currentSubQCount < targetCount) {
+                        currentQuizCards.push({
+                            type: 'single',
+                            data: sQ,
+                            num: globalQuestionNumber
+                        });
+                        globalQuestionNumber++;
+                        currentSubQCount++;
                     } else {
                         break;
                     }
                 }
+                totalSubQuestionCount = currentSubQCount;
             }
 
-            // 計算總題目數
-            totalQuestionCount = 0;
-            currentQuizList.forEach(item => {
-                if (item.subQuestions) {
-                    totalQuestionCount += item.subQuestions.length;
-                } else {
-                    totalQuestionCount++;
-                }
-            });
-
-            // 更新介面統計儀表板
+            // 更新介面狀態與渲染第一張卡片
             updateDashboard();
-
-            // 渲染 DOM
-            renderQuizCards();
-
-            // 平滑滾動至頂部
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            renderCard(0);
         }
 
-        // 更新介面統計數據與進度條
-        function updateDashboard() {
-            document.getElementById('stat-total').innerText = `${totalQuestionCount} 題`;
-            document.getElementById('stat-answered').innerText = `${scoreState.answered} 題`;
-            document.getElementById('stat-correct').innerText = `${scoreState.correct} 題`;
-            
-            const currentScore = totalQuestionCount > 0 
-                ? Math.round((scoreState.correct / totalQuestionCount) * 100) 
-                : 0;
-            document.getElementById('stat-score').innerText = `${currentScore} 分`;
-
-            const percent = totalQuestionCount > 0 
-                ? Math.round((scoreState.answered / totalQuestionCount) * 100) 
-                : 0;
-            document.getElementById('progress-percent').innerText = `${percent}%`;
-            document.getElementById('progress-bar').style.width = `${percent}%`;
-        }
-
-        // 渲染題目卡片到頁面
-        function renderQuizCards() {
-            const container = document.getElementById('quiz-container');
+        // 渲染指定的卡片 (Page View)
+        function renderCard(index) {
+            const container = document.getElementById('quiz-card-container');
             container.innerHTML = '';
 
-            let questionNumber = 1;
+            if (currentQuizCards.length === 0) return;
 
-            currentQuizList.forEach((item) => {
-                if (item.subQuestions) {
-                    // 渲染題組題大卡片 (絕對不切題)
-                    const groupCard = renderGroupCard(item, questionNumber);
-                    container.appendChild(groupCard);
-                    questionNumber += item.subQuestions.length;
-                } else {
-                    // 渲染一般單選題
-                    const singleCard = renderSingleCard(item, questionNumber);
-                    container.appendChild(singleCard);
-                    questionNumber++;
-                }
-            });
+            const cardObj = currentQuizCards[index];
+            let cardElem;
+
+            if (cardObj.type === 'single') {
+                cardElem = buildSingleCardDOM(cardObj.data, cardObj.num);
+            } else {
+                cardElem = buildGroupCardDOM(cardObj.data, cardObj.startNum);
+            }
+
+            cardElem.classList.add('card-fade-in');
+            container.appendChild(cardElem);
+
+            // 如果已經作答過該卡片的題目，恢復選項狀態
+            restoreCardAnswers(cardObj);
+
+            // 更新按鈕啟用與隱顯狀態
+            updateNavButtons();
+            updateDashboard();
+            
+            // 平滑頂部對齊
+            container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
-        // 渲染單選題卡片
-        function renderSingleCard(qData, num) {
+        // 建立「單選題」卡片 DOM
+        function buildSingleCardDOM(qData, num) {
             const card = document.createElement('div');
-            card.className = "bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-slate-200 space-y-4 transition-all hover:shadow-md";
-            card.id = `card_${qData.id}`;
+            card.className = "bg-white rounded-3xl p-6 sm:p-7 shadow-md border-2 border-teal-200 space-y-5";
 
             let optionsHtml = '';
             qData.options.forEach((opt, idx) => {
@@ -715,27 +743,34 @@
                     <button type="button" 
                             id="btn_${qData.id}_${idx}" 
                             onclick="handleAnswerSelect('${qData.id}', ${idx}, ${qData.answer})"
-                            class="option-btn w-full p-3.5 px-4 text-left text-sm rounded-xl border border-slate-200 bg-slate-50/50 flex items-center justify-between gap-3 text-slate-700">
+                            class="option-btn w-full p-4 px-5 text-left text-sm sm:text-base rounded-2xl border-2 border-slate-200 bg-slate-50 flex items-center justify-between gap-3 text-slate-800 font-medium">
                         <div class="flex items-center gap-3">
-                            <span class="w-6 h-6 rounded-full bg-slate-200 text-slate-600 font-bold text-xs flex items-center justify-center shrink-0 border border-slate-300">${idx + 1}</span>
-                            <span class="font-medium">${opt}</span>
+                            <span class="w-7 h-7 rounded-full bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0 border border-slate-300">${idx + 1}</span>
+                            <span>${opt}</span>
                         </div>
-                        <span id="badge_${qData.id}_${idx}" class="text-base"></span>
+                        <span id="badge_${qData.id}_${idx}" class="text-base shrink-0"></span>
                     </button>
                 `;
             });
 
             card.innerHTML = `
-                <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
-                    <span class="bg-teal-100 text-teal-800 font-black text-xs px-2.5 py-1 rounded-md">第 ${num} 題</span>
-                    <span class="text-xs font-bold text-slate-400">${qData.unit}</span>
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <span class="bg-teal-600 text-white font-black text-xs px-3 py-1 rounded-full flex items-center gap-1">
+                        📝 第 ${num} 題 · 單選題
+                    </span>
+                    <span class="text-xs font-bold text-teal-700 bg-teal-50 px-2.5 py-1 rounded-md border border-teal-100">${qData.unit}</span>
                 </div>
-                <h3 class="text-base sm:text-lg font-bold text-slate-800 leading-relaxed">${qData.question}</h3>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+
+                <h3 class="text-base sm:text-xl font-bold text-slate-800 leading-relaxed pt-1">
+                    ${qData.question}
+                </h3>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                     ${optionsHtml}
                 </div>
-                <!-- 即時解析區 -->
-                <div id="explain_${qData.id}" class="hidden p-4 rounded-xl bg-amber-50 border-l-4 border-amber-400 text-xs sm:text-sm text-amber-900 leading-relaxed space-y-1">
+
+                <!-- 即時觀念解析框 -->
+                <div id="explain_${qData.id}" class="hidden p-4 rounded-2xl bg-amber-50 border-l-4 border-amber-400 text-xs sm:text-sm text-amber-900 leading-relaxed space-y-1">
                     <div class="font-bold flex items-center gap-1.5 text-amber-950">
                         <span>💡 觀念詳細解析：</span>
                     </div>
@@ -745,10 +780,10 @@
             return card;
         }
 
-        // 渲染題組題卡片 (大容器包裹情境 + 所有子題)
-        function renderGroupCard(gData, startNum) {
+        // 建立「題組大卡片」DOM (完整包覆短文/圖表與所有子題，絕對不切題)
+        function buildGroupCardDOM(gData, startNum) {
             const card = document.createElement('div');
-            card.className = "group-container bg-white rounded-3xl p-5 sm:p-7 shadow-md border-2 border-teal-300 border-l-8 border-l-teal-600 space-y-5";
+            card.className = "bg-white rounded-3xl p-6 sm:p-8 shadow-md border-2 border-teal-300 border-l-8 border-l-teal-600 space-y-6";
 
             let subHtml = '';
             let currentNum = startNum;
@@ -760,26 +795,26 @@
                         <button type="button" 
                                 id="btn_${subQ.id}_${idx}" 
                                 onclick="handleAnswerSelect('${subQ.id}', ${idx}, ${subQ.answer})"
-                                class="option-btn w-full p-3 px-3.5 text-left text-sm rounded-xl border border-slate-200 bg-white flex items-center justify-between gap-2.5 text-slate-700">
+                                class="option-btn w-full p-3.5 px-4 text-left text-xs sm:text-sm rounded-xl border border-slate-200 bg-white flex items-center justify-between gap-2.5 text-slate-700">
                             <div class="flex items-center gap-2.5">
                                 <span class="w-5 h-5 rounded-full bg-slate-100 text-slate-600 font-bold text-xs flex items-center justify-center shrink-0 border border-slate-300">${idx + 1}</span>
                                 <span class="font-medium">${opt}</span>
                             </div>
-                            <span id="badge_${subQ.id}_${idx}" class="text-base"></span>
+                            <span id="badge_${subQ.id}_${idx}" class="text-base shrink-0"></span>
                         </button>
                     `;
                 });
 
                 subHtml += `
-                    <div class="bg-slate-50/80 p-4 sm:p-5 rounded-2xl border border-slate-200 space-y-3" id="card_${subQ.id}">
+                    <div class="bg-slate-50/90 p-4 sm:p-5 rounded-2xl border border-slate-200 space-y-3">
                         <div class="flex items-center gap-2">
                             <span class="bg-teal-600 text-white font-black text-xs px-2.5 py-0.5 rounded-full">子題 ${currentNum}</span>
                         </div>
-                        <h4 class="text-sm sm:text-base font-bold text-slate-800 leading-relaxed">${subQ.question}</h4>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <h4 class="text-xs sm:text-base font-bold text-slate-800 leading-relaxed">${subQ.question}</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                             ${optionsHtml}
                         </div>
-                        <!-- 即時解析區 -->
+                        <!-- 子題解析 -->
                         <div id="explain_${subQ.id}" class="hidden p-3.5 rounded-xl bg-amber-50 border-l-4 border-amber-400 text-xs sm:text-sm text-amber-900 leading-relaxed">
                             <strong>💡 觀念解析：</strong> ${subQ.explanation}
                         </div>
@@ -792,16 +827,16 @@
                 <!-- 題組標頭 -->
                 <div class="flex flex-wrap items-center justify-between gap-2 border-b border-teal-100 pb-3">
                     <div class="flex items-center gap-2">
-                        <span class="bg-teal-700 text-white font-black text-xs px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1">
-                            📌 題組不切題專區
+                        <span class="bg-amber-400 text-teal-950 font-black text-xs px-3 py-1 rounded-full uppercase flex items-center gap-1">
+                            📌 綜合題組 (不切題頁面)
                         </span>
                         <h3 class="text-base sm:text-lg font-black text-teal-900">${gData.tag}</h3>
                     </div>
-                    <span class="text-xs text-teal-700 font-bold">涵蓋子題：第 ${startNum} ~ ${currentNum - 1} 題</span>
+                    <span class="text-xs text-teal-700 font-bold">子題範圍：第 ${startNum} ~ ${currentNum - 1} 題</span>
                 </div>
 
-                <!-- 閱讀情境 / 數據圖表區 -->
-                <div class="bg-gradient-to-br from-teal-50/80 to-emerald-50/80 rounded-2xl p-4 sm:p-5 border border-teal-200 space-y-2">
+                <!-- 閱讀情境/圖表素材 -->
+                <div class="bg-gradient-to-br from-teal-50/90 to-emerald-50/90 rounded-2xl p-4 sm:p-5 border border-teal-200 space-y-2">
                     <h4 class="font-bold text-teal-900 text-sm flex items-center gap-1.5">
                         <svg class="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                         ${gData.stimulus.title}
@@ -811,7 +846,7 @@
                     </div>
                 </div>
 
-                <!-- 子題集合 -->
+                <!-- 題組所有子題一併呈現 -->
                 <div class="space-y-4 pt-1">
                     ${subHtml}
                 </div>
@@ -819,9 +854,9 @@
             return card;
         }
 
-        // 處理使用者點擊選項時的「即時反饋」邏輯
+        // 點選答案處置 (即時對錯與解析)
         function handleAnswerSelect(qId, selectedIdx, correctIdx) {
-            if (userAnswers[qId] !== undefined) return; // 避免重複作答
+            if (userAnswers[qId] !== undefined) return; // 不重複計算
 
             userAnswers[qId] = selectedIdx;
             scoreState.answered++;
@@ -829,35 +864,114 @@
             const isCorrect = (selectedIdx === correctIdx);
             if (isCorrect) scoreState.correct++;
 
-            // 禁用該題所有選項並標示正確與錯誤樣式
+            // 套用視覺回饋
+            applyOptionStyle(qId, selectedIdx, correctIdx);
+
+            // 更新介面狀態
+            updateDashboard();
+
+            // 若全部做完自動彈出結算視窗
+            if (scoreState.answered === totalSubQuestionCount) {
+                setTimeout(showFinishModal, 600);
+            }
+        }
+
+        // 套用選項對錯標籤與解析顯示
+        function applyOptionStyle(qId, selectedIdx, correctIdx) {
+            const isCorrect = (selectedIdx === correctIdx);
             const optionsBtns = document.querySelectorAll(`[id^="btn_${qId}_"]`);
+
             optionsBtns.forEach((btn, idx) => {
                 btn.disabled = true;
                 if (idx === correctIdx) {
                     btn.classList.add('opt-correct');
-                    document.getElementById(`badge_${qId}_${idx}`).innerText = '⭕ 正確';
+                    const badge = document.getElementById(`badge_${qId}_${idx}`);
+                    if (badge) badge.innerText = '⭕ 正確';
                 } else if (idx === selectedIdx && !isCorrect) {
                     btn.classList.add('opt-wrong');
-                    document.getElementById(`badge_${qId}_${idx}`).innerText = '❌ 錯誤';
+                    const badge = document.getElementById(`badge_${qId}_${idx}`);
+                    if (badge) badge.innerText = '❌ 錯誤';
                 }
             });
 
-            // 顯示該題解析
             const explainBox = document.getElementById(`explain_${qId}`);
             if (explainBox) explainBox.classList.remove('hidden');
+        }
 
-            // 即時更新進度儀表板
-            updateDashboard();
-
-            // 若全部作答完畢，開啟獎勵視窗
-            if (scoreState.answered === totalQuestionCount) {
-                setTimeout(showFinishModal, 500);
+        // 恢復已答題卡片的顯示狀態 (在切換卡片時)
+        function restoreCardAnswers(cardObj) {
+            if (cardObj.type === 'single') {
+                const qId = cardObj.data.id;
+                if (userAnswers[qId] !== undefined) {
+                    applyOptionStyle(qId, userAnswers[qId], cardObj.data.answer);
+                }
+            } else {
+                cardObj.data.subQuestions.forEach(subQ => {
+                    const qId = subQ.id;
+                    if (userAnswers[qId] !== undefined) {
+                        applyOptionStyle(qId, userAnswers[qId], subQ.answer);
+                    }
+                });
             }
         }
 
-        // 顯示測驗結束視窗
+        // 切換卡片 (上一頁 / 下一頁)
+        function changeCard(delta) {
+            const newIndex = currentCardIndex + delta;
+            if (newIndex >= 0 && newIndex < currentQuizCards.length) {
+                currentCardIndex = newIndex;
+                renderCard(currentCardIndex);
+            }
+        }
+
+        // 更新按鈕啟用與隱顯狀態
+        function updateNavButtons() {
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const finishBtn = document.getElementById('finish-btn');
+
+            // 第一頁時禁用上一頁
+            prevBtn.disabled = (currentCardIndex === 0);
+
+            // 最後一頁時隱藏下一頁，改顯示「完成測驗」
+            if (currentCardIndex === currentQuizCards.length - 1) {
+                nextBtn.classList.add('hidden');
+                finishBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+                finishBtn.classList.add('hidden');
+            }
+
+            document.getElementById('card-footer-info').innerText = 
+                `目前頁面：第 ${currentCardIndex + 1} / ${currentQuizCards.length} 頁`;
+        }
+
+        // 更新介面統計儀表板
+        function updateDashboard() {
+            document.getElementById('stat-card-progress').innerText = 
+                `${currentCardIndex + 1} / ${currentQuizCards.length} 頁`;
+
+            document.getElementById('stat-answered').innerText = 
+                `${scoreState.answered} / ${totalSubQuestionCount} 題`;
+
+            document.getElementById('stat-correct').innerText = 
+                `${scoreState.correct} 題`;
+
+            const score = totalSubQuestionCount > 0 
+                ? Math.round((scoreState.correct / totalSubQuestionCount) * 100) 
+                : 0;
+            document.getElementById('stat-score').innerText = `${score} 分`;
+
+            const percent = totalSubQuestionCount > 0 
+                ? Math.round((scoreState.answered / totalSubQuestionCount) * 100) 
+                : 0;
+            document.getElementById('progress-percent').innerText = `${percent}%`;
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+        }
+
+        // 顯示測驗結算視窗
         function showFinishModal() {
-            const score = Math.round((scoreState.correct / totalQuestionCount) * 100);
+            const score = Math.round((scoreState.correct / totalSubQuestionCount) * 100);
             document.getElementById('modal-score').innerText = score;
             
             const badge = document.getElementById('modal-badge');
@@ -865,20 +979,20 @@
 
             if (score === 100) {
                 badge.innerText = "🏆 滿分！自然小學霸";
-                badge.className = "inline-block px-3.5 py-1 rounded-full text-xs font-bold bg-emerald-600 text-white mt-2";
+                badge.className = "inline-block px-3 py-1 rounded-full text-xs font-bold bg-emerald-600 text-white mt-2";
                 desc.innerText = "太厲害了！你對康軒版自然科 5上 所有的動物、聲音與光的觀念完全掌握！";
             } else if (score >= 80) {
                 badge.innerText = "🌟 優秀！自然高分高手";
-                badge.className = "inline-block px-3.5 py-1 rounded-full text-xs font-bold bg-teal-600 text-white mt-2";
-                desc.innerText = "表現非常傑出！仔細對照剛才錯題的觀念解析，下次一定能拿滿分！";
+                badge.className = "inline-block px-3 py-1 rounded-full text-xs font-bold bg-teal-600 text-white mt-2";
+                desc.innerText = "表現非常傑出！可以點選「上一頁/下一頁」重新複習錯題的解析。";
             } else if (score >= 60) {
                 badge.innerText = "👍 及格！觀念漸入佳境";
-                badge.className = "inline-block px-3.5 py-1 rounded-full text-xs font-bold bg-amber-500 text-white mt-2";
-                desc.innerText = "恭喜通過測驗！建議瀏覽剛才標記黃色的觀念解析，鞏固記憶。";
+                badge.className = "inline-block px-3 py-1 rounded-full text-xs font-bold bg-amber-500 text-white mt-2";
+                desc.innerText = "恭喜通過測驗！建議翻閱前面卡片標記黃色的觀念解析，鞏固學習重點。";
             } else {
                 badge.innerText = "📚 努力！考前繼續加油";
-                badge.className = "inline-block px-3.5 py-1 rounded-full text-xs font-bold bg-rose-500 text-white mt-2";
-                desc.innerText = "沒關係，自然科需要多看圖片與題目解析，對照下方的詳細說明再試一次吧！";
+                badge.className = "inline-block px-3 py-1 rounded-full text-xs font-bold bg-rose-500 text-white mt-2";
+                desc.innerText = "沒關係，自然科需要多看題目與觀念解析，對照說明再挑戰一次吧！";
             }
 
             document.getElementById('finish-modal').classList.remove('hidden');
@@ -895,7 +1009,7 @@
 
             const btnText = document.getElementById('copy-btn-text');
             btnText.innerText = '已複製網址！';
-            setTimeout(() => { btnText.innerText = '複製測驗網址'; }, 2000);
+            setTimeout(() => { btnText.innerText = '複製網址'; }, 2000);
         }
     </script>
 </body>
